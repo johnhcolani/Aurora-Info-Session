@@ -9,6 +9,7 @@ class RandomImageState with _$RandomImageState {
     RandomImageEntity? image,
     Color? backgroundColor,
     String? errorMessage,
+    @Default(false) bool isBookmarked,
   }) = _RandomImageState;
 
   const RandomImageState._();

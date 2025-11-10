@@ -9,6 +9,9 @@ import 'package:image/image.dart' as img;
 
 import '../../../../core/resources/data_state.dart';
 import '../../../../core/usecase/use_case.dart';
+import '../../../bookmark/domain/usecases/add_bookmark_usecase.dart';
+import '../../../bookmark/domain/usecases/is_bookmarked_usecase.dart';
+import '../../../bookmark/domain/usecases/remove_bookmark_usecase.dart';
 import '../../domain/entities/random_image_entity.dart';
 import '../../domain/usecases/get_random_image_usecase.dart';
 
@@ -21,15 +24,25 @@ typedef DominantColorLoader = Future<Color?> Function(String imageUrl);
 class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
   RandomImageBloc(
     this._getRandomImageUseCase, {
+    required AddBookmarkUseCase addBookmarkUseCase,
+    required RemoveBookmarkUseCase removeBookmarkUseCase,
+    required IsBookmarkedUseCase isBookmarkedUseCase,
     DominantColorLoader? loadDominantColor,
-  })  : _loadDominantColor =
+  })  : _addBookmarkUseCase = addBookmarkUseCase,
+        _removeBookmarkUseCase = removeBookmarkUseCase,
+        _isBookmarkedUseCase = isBookmarkedUseCase,
+        _loadDominantColor =
             loadDominantColor ?? _defaultDominantColorLoader,
         super(const RandomImageState()) {
     on<_Started>(_onStarted);
     on<_RefreshRequested>(_onRefreshRequested);
+    on<_BookmarkToggled>(_onBookmarkToggled);
   }
 
   final GetRandomImageUseCase _getRandomImageUseCase;
+  final AddBookmarkUseCase _addBookmarkUseCase;
+  final RemoveBookmarkUseCase _removeBookmarkUseCase;
+  final IsBookmarkedUseCase _isBookmarkedUseCase;
   final DominantColorLoader _loadDominantColor;
 
   Future<void> _onStarted(
@@ -77,10 +90,13 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
         dominantColor = null;
       }
 
+      final isBookmarked = await _isBookmarkedUseCase(fetchedImage.url);
+
       emit(
         state.copyWith(
           image: fetchedImage,
           backgroundColor: dominantColor,
+          isBookmarked: isBookmarked,
           status: RandomImageStatus.success,
         ),
       );
@@ -89,6 +105,38 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
         state.copyWith(
           status: RandomImageStatus.failure,
           errorMessage: result.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _onBookmarkToggled(
+    _BookmarkToggled event,
+    Emitter<RandomImageState> emit,
+  ) async {
+    final image = state.image;
+    if (image == null) {
+      return;
+    }
+
+    final isCurrentlyBookmarked = state.isBookmarked;
+    try {
+      if (isCurrentlyBookmarked) {
+        await _removeBookmarkUseCase(image.url);
+      } else {
+        await _addBookmarkUseCase(image.url);
+      }
+
+      emit(
+        state.copyWith(
+          isBookmarked: !isCurrentlyBookmarked,
+          errorMessage: null,
+        ),
+      );
+    } catch (error) {
+      emit(
+        state.copyWith(
+          errorMessage: 'Unable to update markbook. Please try again.',
         ),
       );
     }
@@ -161,3 +209,4 @@ Future<Color?> _getDominantColorFromUrl(String imageUrl) async {
     client.close(force: true);
   }
 }
+

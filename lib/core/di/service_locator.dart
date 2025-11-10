@@ -1,6 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../features/bookmark/data/datasources/bookmark_local_data_source.dart';
+import '../../features/bookmark/data/repositories/bookmark_repository_impl.dart';
+import '../../features/bookmark/domain/repositories/bookmark_repository.dart';
+import '../../features/bookmark/domain/usecases/add_bookmark_usecase.dart';
+import '../../features/bookmark/domain/usecases/get_bookmarks_usecase.dart';
+import '../../features/bookmark/domain/usecases/is_bookmarked_usecase.dart';
+import '../../features/bookmark/domain/usecases/remove_bookmark_usecase.dart';
+import '../../features/bookmark/presentation/cubit/bookmark_album_cubit.dart';
 import '../../features/random_image/data/datasources/random_image_remote_data_source.dart';
 import '../../features/random_image/data/repositories/random_image_repository_impl.dart';
 import '../../features/random_image/domain/repositories/random_image_repository.dart';
@@ -14,6 +22,22 @@ Future<void> setupDependencies() async {
   serviceLocator
     ..registerLazySingleton(DioClient.new)
     ..registerLazySingleton<Dio>(() => serviceLocator<DioClient>().dio)
+    ..registerLazySingleton(BookmarkLocalDataSource.new)
+    ..registerLazySingleton<BookmarkRepository>(
+      () => BookmarkRepositoryImpl(serviceLocator()),
+    )
+    ..registerLazySingleton(
+      () => AddBookmarkUseCase(serviceLocator()),
+    )
+    ..registerLazySingleton(
+      () => RemoveBookmarkUseCase(serviceLocator()),
+    )
+    ..registerLazySingleton(
+      () => IsBookmarkedUseCase(serviceLocator()),
+    )
+    ..registerLazySingleton(
+      () => GetBookmarksUseCase(serviceLocator()),
+    )
     ..registerLazySingleton<RandomImageRemoteDataSource>(
       () => RandomImageRemoteDataSourceImpl(serviceLocator()),
     )
@@ -24,7 +48,15 @@ Future<void> setupDependencies() async {
       () => GetRandomImageUseCase(serviceLocator()),
     )
     ..registerFactory(
-      () => RandomImageBloc(serviceLocator()),
+      () => RandomImageBloc(
+        serviceLocator(),
+        addBookmarkUseCase: serviceLocator(),
+        removeBookmarkUseCase: serviceLocator(),
+        isBookmarkedUseCase: serviceLocator(),
+      ),
+    )
+    ..registerFactory(
+      () => BookmarkAlbumCubit(serviceLocator()),
     );
 }
 

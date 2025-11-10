@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:math' as math;
 
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import '../../../../app/router/app_router.dart';
 import '../bloc/random_image_bloc.dart';
 
 typedef NetworkImageBuilder = Widget Function(
@@ -45,6 +47,7 @@ class RandomImageView extends StatelessWidget {
               backgroundColor: buttonBackgroundColor,
               foregroundColor: buttonForegroundColor,
               height: appBarHeight,
+              onAlbumPressed: () => _openAlbum(context),
             ),
           ),
           body: AnimatedContainer(
@@ -75,43 +78,47 @@ class RandomImageView extends StatelessWidget {
                       button: true,
                       enabled: !state.isLoading,
                       label: 'Load another random image',
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: state.isLoading
-                              ? null
-                              : () => context.read<RandomImageBloc>().add(
-                                  const RandomImageEvent.refreshRequested(),
-                                ),
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            backgroundColor: buttonBackgroundColor,
-                            foregroundColor: buttonForegroundColor,
-                            disabledBackgroundColor: buttonBackgroundColor
-                                .withValues(alpha: 0.6),
-                            disabledForegroundColor: buttonForegroundColor
-                                .withValues(alpha: 0.8),
-                            textStyle: theme.textTheme.titleMedium?.copyWith(
-                              color: buttonForegroundColor,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: state.isLoading
+                                ? null
+                                : () => context.read<RandomImageBloc>().add(
+                                    const RandomImageEvent.refreshRequested(),
+                                  ),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: buttonBackgroundColor,
+                              foregroundColor: buttonForegroundColor,
+                              disabledBackgroundColor: buttonBackgroundColor
+                                  .withValues(alpha: 0.6),
+                              disabledForegroundColor: buttonForegroundColor
+                                  .withValues(alpha: 0.8),
+                              textStyle: theme.textTheme.titleMedium?.copyWith(
+                                color: buttonForegroundColor,
+                              ),
                             ),
-                          ),
-                          child: state.isLoading
-                              ? SizedBox(
-                                  width: 16,
-                                  height: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 1.6,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      buttonForegroundColor,
+                            child: state.isLoading
+                                ? SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 1.6,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        buttonForegroundColor,
+                                      ),
+                                    ),
+                                  )
+                                : Text(
+                                    'Another',
+                                    style: theme.textTheme.titleMedium
+                                        ?.copyWith(
+                                      color: buttonForegroundColor,
                                     ),
                                   ),
-                                )
-                              : Text(
-                                  'Another',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    color: buttonForegroundColor,
-                                  ),
-                                ),
+                          ),
                         ),
                       ),
                     ),
@@ -123,6 +130,10 @@ class RandomImageView extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _openAlbum(BuildContext context) {
+    context.pushRoute(const BookmarkAlbumRoute());
   }
 
   Widget _buildContent(
@@ -180,25 +191,61 @@ class RandomImageView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ClipPath(
-              clipper: const TopBumpClipper(),
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: networkImageBuilder != null
-                    ? networkImageBuilder!(context, imageUrl, foregroundColor)
-                    : CachedNetworkImage(
-                        imageUrl: imageUrl,
-                        fit: BoxFit.cover,
-                        fadeInDuration: const Duration(milliseconds: 300),
-                        fadeOutDuration: const Duration(milliseconds: 200),
-                        placeholder: (_, __) =>
-                            _LoadingIndicator(color: foregroundColor),
-                        errorWidget: (_, __, ___) => _ErrorMessage(
-                          message: 'Could not load image.',
-                          color: foregroundColor,
+            Stack(
+              children: [
+                ClipPath(
+                  clipper: const TopBumpClipper(),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: networkImageBuilder != null
+                        ? networkImageBuilder!(
+                            context,
+                            imageUrl,
+                            foregroundColor,
+                          )
+                        : CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            fit: BoxFit.cover,
+                            fadeInDuration: const Duration(milliseconds: 300),
+                            fadeOutDuration: const Duration(milliseconds: 200),
+                            placeholder: (_, __) =>
+                                _LoadingIndicator(color: foregroundColor),
+                            errorWidget: (_, __, ___) => _ErrorMessage(
+                              message: 'Could not load image.',
+                              color: foregroundColor,
+                            ),
+                          ),
+                  ),
+                ),
+                Positioned(
+                  top: 16,
+                  right: 4,
+                  child: Semantics(
+                    label: state.isBookmarked
+                        ? 'Remove from markbook'
+                        : 'Add to markbook',
+                    button: true,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.35),
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: IconButton(
+                        iconSize: 28,
+                        onPressed: () => context
+                            .read<RandomImageBloc>()
+                            .add(const RandomImageEvent.bookmarkToggled()),
+                        icon: Icon(
+                          state.isBookmarked
+                              ? Icons.bookmark
+                              : Icons.bookmark_border,
+                          color: Colors.white,
                         ),
                       ),
-              ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 12),
             Text(
@@ -245,11 +292,13 @@ class _CurvedAppBar extends StatelessWidget {
     required this.backgroundColor,
     required this.foregroundColor,
     required this.height,
+    required this.onAlbumPressed,
   });
 
   final Color backgroundColor;
   final Color foregroundColor;
   final double height;
+  final VoidCallback onAlbumPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -274,25 +323,44 @@ class _CurvedAppBar extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 16),
-                Text(
-                  'Aurora Gallery',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: foregroundColor,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.6,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      onPressed: onAlbumPressed,
+                      icon: Icon(
+                        Icons.collections_bookmark_outlined,
+                        color: foregroundColor,
+                      ),
+                      tooltip: 'Open markbook album',
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 36,
-                  child: Image.asset(
-                    'assets/Aurora Text Logo.png',
-                    fit: BoxFit.contain,
-                    semanticLabel: 'Aurora logo',
+                const SizedBox(height: 4),
+                Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Aurora Gallery',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: foregroundColor,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 36,
+                        child: Image.asset(
+                          'assets/Aurora Text Logo.png',
+                          fit: BoxFit.contain,
+                          semanticLabel: 'Aurora logo',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

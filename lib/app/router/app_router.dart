@@ -1,5 +1,8 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/widgets.dart';
 
+import '../../features/bookmark/presentation/view/bookmark_album_page.dart';
+import '../../features/bookmark/presentation/view/bookmark_detail_page.dart';
 import '../../features/random_image/presentation/view/random_image_page.dart';
 
 part 'app_router.gr.dart';
@@ -11,6 +14,8 @@ class AppRouter extends RootStackRouter {
   @override
   final List<AutoRoute> routes = [
     AutoRoute(page: RandomImageRoute.page, initial: true),
+    AutoRoute(page: BookmarkAlbumRoute.page),
+    AutoRoute(page: BookmarkDetailRoute.page),
   ];
 }
 

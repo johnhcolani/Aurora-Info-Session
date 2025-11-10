@@ -21,32 +21,38 @@ mixin _$RandomImageEvent {
   TResult when<TResult extends Object?>({
     required TResult Function() started,
     required TResult Function() refreshRequested,
+    required TResult Function() bookmarkToggled,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
     TResult? Function()? refreshRequested,
+    TResult? Function()? bookmarkToggled,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
     TResult Function()? refreshRequested,
+    TResult Function()? bookmarkToggled,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
     required TResult Function(_RefreshRequested value) refreshRequested,
+    required TResult Function(_BookmarkToggled value) bookmarkToggled,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
     TResult? Function(_RefreshRequested value)? refreshRequested,
+    TResult? Function(_BookmarkToggled value)? bookmarkToggled,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
     TResult Function(_RefreshRequested value)? refreshRequested,
+    TResult Function(_BookmarkToggled value)? bookmarkToggled,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -96,12 +102,18 @@ class __$$StartedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$StartedImpl implements _Started {
+class _$StartedImpl with DiagnosticableTreeMixin implements _Started {
   const _$StartedImpl();
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'RandomImageEvent.started()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties..add(DiagnosticsProperty('type', 'RandomImageEvent.started'));
   }
 
   @override
@@ -118,6 +130,7 @@ class _$StartedImpl implements _Started {
   TResult when<TResult extends Object?>({
     required TResult Function() started,
     required TResult Function() refreshRequested,
+    required TResult Function() bookmarkToggled,
   }) {
     return started();
   }
@@ -127,6 +140,7 @@ class _$StartedImpl implements _Started {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
     TResult? Function()? refreshRequested,
+    TResult? Function()? bookmarkToggled,
   }) {
     return started?.call();
   }
@@ -136,6 +150,7 @@ class _$StartedImpl implements _Started {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
     TResult Function()? refreshRequested,
+    TResult Function()? bookmarkToggled,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -149,6 +164,7 @@ class _$StartedImpl implements _Started {
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
     required TResult Function(_RefreshRequested value) refreshRequested,
+    required TResult Function(_BookmarkToggled value) bookmarkToggled,
   }) {
     return started(this);
   }
@@ -158,6 +174,7 @@ class _$StartedImpl implements _Started {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
     TResult? Function(_RefreshRequested value)? refreshRequested,
+    TResult? Function(_BookmarkToggled value)? bookmarkToggled,
   }) {
     return started?.call(this);
   }
@@ -167,6 +184,7 @@ class _$StartedImpl implements _Started {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
     TResult Function(_RefreshRequested value)? refreshRequested,
+    TResult Function(_BookmarkToggled value)? bookmarkToggled,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -203,12 +221,21 @@ class __$$RefreshRequestedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$RefreshRequestedImpl implements _RefreshRequested {
+class _$RefreshRequestedImpl
+    with DiagnosticableTreeMixin
+    implements _RefreshRequested {
   const _$RefreshRequestedImpl();
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'RandomImageEvent.refreshRequested()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'RandomImageEvent.refreshRequested'));
   }
 
   @override
@@ -225,6 +252,7 @@ class _$RefreshRequestedImpl implements _RefreshRequested {
   TResult when<TResult extends Object?>({
     required TResult Function() started,
     required TResult Function() refreshRequested,
+    required TResult Function() bookmarkToggled,
   }) {
     return refreshRequested();
   }
@@ -234,6 +262,7 @@ class _$RefreshRequestedImpl implements _RefreshRequested {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
     TResult? Function()? refreshRequested,
+    TResult? Function()? bookmarkToggled,
   }) {
     return refreshRequested?.call();
   }
@@ -243,6 +272,7 @@ class _$RefreshRequestedImpl implements _RefreshRequested {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
     TResult Function()? refreshRequested,
+    TResult Function()? bookmarkToggled,
     required TResult orElse(),
   }) {
     if (refreshRequested != null) {
@@ -256,6 +286,7 @@ class _$RefreshRequestedImpl implements _RefreshRequested {
   TResult map<TResult extends Object?>({
     required TResult Function(_Started value) started,
     required TResult Function(_RefreshRequested value) refreshRequested,
+    required TResult Function(_BookmarkToggled value) bookmarkToggled,
   }) {
     return refreshRequested(this);
   }
@@ -265,6 +296,7 @@ class _$RefreshRequestedImpl implements _RefreshRequested {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_Started value)? started,
     TResult? Function(_RefreshRequested value)? refreshRequested,
+    TResult? Function(_BookmarkToggled value)? bookmarkToggled,
   }) {
     return refreshRequested?.call(this);
   }
@@ -274,6 +306,7 @@ class _$RefreshRequestedImpl implements _RefreshRequested {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_Started value)? started,
     TResult Function(_RefreshRequested value)? refreshRequested,
+    TResult Function(_BookmarkToggled value)? bookmarkToggled,
     required TResult orElse(),
   }) {
     if (refreshRequested != null) {
@@ -288,11 +321,134 @@ abstract class _RefreshRequested implements RandomImageEvent {
 }
 
 /// @nodoc
+abstract class _$$BookmarkToggledImplCopyWith<$Res> {
+  factory _$$BookmarkToggledImplCopyWith(
+    _$BookmarkToggledImpl value,
+    $Res Function(_$BookmarkToggledImpl) then,
+  ) = __$$BookmarkToggledImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$BookmarkToggledImplCopyWithImpl<$Res>
+    extends _$RandomImageEventCopyWithImpl<$Res, _$BookmarkToggledImpl>
+    implements _$$BookmarkToggledImplCopyWith<$Res> {
+  __$$BookmarkToggledImplCopyWithImpl(
+    _$BookmarkToggledImpl _value,
+    $Res Function(_$BookmarkToggledImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of RandomImageEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$BookmarkToggledImpl
+    with DiagnosticableTreeMixin
+    implements _BookmarkToggled {
+  const _$BookmarkToggledImpl();
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'RandomImageEvent.bookmarkToggled()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'RandomImageEvent.bookmarkToggled'));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$BookmarkToggledImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() started,
+    required TResult Function() refreshRequested,
+    required TResult Function() bookmarkToggled,
+  }) {
+    return bookmarkToggled();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? started,
+    TResult? Function()? refreshRequested,
+    TResult? Function()? bookmarkToggled,
+  }) {
+    return bookmarkToggled?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? started,
+    TResult Function()? refreshRequested,
+    TResult Function()? bookmarkToggled,
+    required TResult orElse(),
+  }) {
+    if (bookmarkToggled != null) {
+      return bookmarkToggled();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_Started value) started,
+    required TResult Function(_RefreshRequested value) refreshRequested,
+    required TResult Function(_BookmarkToggled value) bookmarkToggled,
+  }) {
+    return bookmarkToggled(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_Started value)? started,
+    TResult? Function(_RefreshRequested value)? refreshRequested,
+    TResult? Function(_BookmarkToggled value)? bookmarkToggled,
+  }) {
+    return bookmarkToggled?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_Started value)? started,
+    TResult Function(_RefreshRequested value)? refreshRequested,
+    TResult Function(_BookmarkToggled value)? bookmarkToggled,
+    required TResult orElse(),
+  }) {
+    if (bookmarkToggled != null) {
+      return bookmarkToggled(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _BookmarkToggled implements RandomImageEvent {
+  const factory _BookmarkToggled() = _$BookmarkToggledImpl;
+}
+
+/// @nodoc
 mixin _$RandomImageState {
   RandomImageStatus get status => throw _privateConstructorUsedError;
   RandomImageEntity? get image => throw _privateConstructorUsedError;
   Color? get backgroundColor => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
+  bool get isBookmarked => throw _privateConstructorUsedError;
 
   /// Create a copy of RandomImageState
   /// with the given fields replaced by the non-null parameter values.
@@ -313,6 +469,7 @@ abstract class $RandomImageStateCopyWith<$Res> {
     RandomImageEntity? image,
     Color? backgroundColor,
     String? errorMessage,
+    bool isBookmarked,
   });
 }
 
@@ -335,6 +492,7 @@ class _$RandomImageStateCopyWithImpl<$Res, $Val extends RandomImageState>
     Object? image = freezed,
     Object? backgroundColor = freezed,
     Object? errorMessage = freezed,
+    Object? isBookmarked = null,
   }) {
     return _then(
       _value.copyWith(
@@ -354,6 +512,10 @@ class _$RandomImageStateCopyWithImpl<$Res, $Val extends RandomImageState>
                 ? _value.errorMessage
                 : errorMessage // ignore: cast_nullable_to_non_nullable
                       as String?,
+            isBookmarked: null == isBookmarked
+                ? _value.isBookmarked
+                : isBookmarked // ignore: cast_nullable_to_non_nullable
+                      as bool,
           )
           as $Val,
     );
@@ -374,6 +536,7 @@ abstract class _$$RandomImageStateImplCopyWith<$Res>
     RandomImageEntity? image,
     Color? backgroundColor,
     String? errorMessage,
+    bool isBookmarked,
   });
 }
 
@@ -395,6 +558,7 @@ class __$$RandomImageStateImplCopyWithImpl<$Res>
     Object? image = freezed,
     Object? backgroundColor = freezed,
     Object? errorMessage = freezed,
+    Object? isBookmarked = null,
   }) {
     return _then(
       _$RandomImageStateImpl(
@@ -414,6 +578,10 @@ class __$$RandomImageStateImplCopyWithImpl<$Res>
             ? _value.errorMessage
             : errorMessage // ignore: cast_nullable_to_non_nullable
                   as String?,
+        isBookmarked: null == isBookmarked
+            ? _value.isBookmarked
+            : isBookmarked // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -421,12 +589,14 @@ class __$$RandomImageStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$RandomImageStateImpl extends _RandomImageState {
+class _$RandomImageStateImpl extends _RandomImageState
+    with DiagnosticableTreeMixin {
   const _$RandomImageStateImpl({
     this.status = RandomImageStatus.initial,
     this.image,
     this.backgroundColor,
     this.errorMessage,
+    this.isBookmarked = false,
   }) : super._();
 
   @override
@@ -438,10 +608,25 @@ class _$RandomImageStateImpl extends _RandomImageState {
   final Color? backgroundColor;
   @override
   final String? errorMessage;
+  @override
+  @JsonKey()
+  final bool isBookmarked;
 
   @override
-  String toString() {
-    return 'RandomImageState(status: $status, image: $image, backgroundColor: $backgroundColor, errorMessage: $errorMessage)';
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'RandomImageState(status: $status, image: $image, backgroundColor: $backgroundColor, errorMessage: $errorMessage, isBookmarked: $isBookmarked)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'RandomImageState'))
+      ..add(DiagnosticsProperty('status', status))
+      ..add(DiagnosticsProperty('image', image))
+      ..add(DiagnosticsProperty('backgroundColor', backgroundColor))
+      ..add(DiagnosticsProperty('errorMessage', errorMessage))
+      ..add(DiagnosticsProperty('isBookmarked', isBookmarked));
   }
 
   @override
@@ -454,12 +639,20 @@ class _$RandomImageStateImpl extends _RandomImageState {
             (identical(other.backgroundColor, backgroundColor) ||
                 other.backgroundColor == backgroundColor) &&
             (identical(other.errorMessage, errorMessage) ||
-                other.errorMessage == errorMessage));
+                other.errorMessage == errorMessage) &&
+            (identical(other.isBookmarked, isBookmarked) ||
+                other.isBookmarked == isBookmarked));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, status, image, backgroundColor, errorMessage);
+  int get hashCode => Object.hash(
+    runtimeType,
+    status,
+    image,
+    backgroundColor,
+    errorMessage,
+    isBookmarked,
+  );
 
   /// Create a copy of RandomImageState
   /// with the given fields replaced by the non-null parameter values.
@@ -479,6 +672,7 @@ abstract class _RandomImageState extends RandomImageState {
     final RandomImageEntity? image,
     final Color? backgroundColor,
     final String? errorMessage,
+    final bool isBookmarked,
   }) = _$RandomImageStateImpl;
   const _RandomImageState._() : super._();
 
@@ -490,6 +684,8 @@ abstract class _RandomImageState extends RandomImageState {
   Color? get backgroundColor;
   @override
   String? get errorMessage;
+  @override
+  bool get isBookmarked;
 
   /// Create a copy of RandomImageState
   /// with the given fields replaced by the non-null parameter values.

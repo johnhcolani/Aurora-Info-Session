@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';
+// 🟡 This is the updated BLoC code using Isolate (`compute`) for image color extraction
+import 'dart:io';
+import 'dart:ui';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:palette_generator/palette_generator.dart';
+import 'package:image/image.dart' as img;
 
 import '../../../../core/resources/data_state.dart';
 import '../../../../core/usecase/use_case.dart';
@@ -22,16 +26,16 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
   final GetRandomImageUseCase _getRandomImageUseCase;
 
   Future<void> _onStarted(
-    _Started event,
-    Emitter<RandomImageState> emit,
-  ) async {
+      _Started event,
+      Emitter<RandomImageState> emit,
+      ) async {
     await _fetchImage(emit);
   }
 
   Future<void> _onRefreshRequested(
-    _RefreshRequested event,
-    Emitter<RandomImageState> emit,
-  ) async {
+      _RefreshRequested event,
+      Emitter<RandomImageState> emit,
+      ) async {
     await _fetchImage(emit);
   }
 
@@ -46,63 +50,106 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
     final result = await _getRandomImageUseCase(NoParams());
 
     if (result is DataSuccess<RandomImageEntity>) {
-      final image = result.data;
+      final fetchedImage = result.data;
 
-      if (image == null || image.url.isEmpty) {
+      if (fetchedImage == null || fetchedImage.url.isEmpty) {
         emit(
           state.copyWith(
             status: RandomImageStatus.failure,
-            errorMessage: 'No image received from the server.',
+            errorMessage: 'Image data is empty',
           ),
         );
         return;
       }
 
-      final backgroundColor = await _resolveDominantColor(image.url);
+      // 🌈 Get dominant color using compute (Isolate)
+      Color? dominantColor;
+      try {
+        dominantColor = await compute<String, Color?>(
+          _getDominantColorFromUrl,
+          fetchedImage.url,
+        );
+      } catch (_) {
+        dominantColor = null;
+      }
 
       emit(
         state.copyWith(
+          image: fetchedImage,
+          backgroundColor: dominantColor,
           status: RandomImageStatus.success,
-          image: image,
-          backgroundColor: backgroundColor,
         ),
       );
-      return;
-    }
-
-    emit(
-      state.copyWith(
-        status: RandomImageStatus.failure,
-        errorMessage: result.error ?? 'Failed to load image.',
-      ),
-    );
-  }
-
-  Future<Color> _resolveDominantColor(String url) async {
-    try {
-      final palette = await PaletteGenerator.fromImageProvider(
-        NetworkImage(url),
-        maximumColorCount: 16,
+    } else {
+      emit(
+        state.copyWith(
+          status: RandomImageStatus.failure,
+          errorMessage: result.error,
+        ),
       );
-      final dominant = palette.dominantColor?.color;
-      if (dominant == null) {
-        return const Color(0xFF111111);
-      }
-      return _adjustForContrast(dominant);
-    } catch (_) {
-      return const Color(0xFF111111);
     }
-  }
-
-  Color _adjustForContrast(Color color) {
-    final luminance = color.computeLuminance();
-    if (luminance < 0.1) {
-      return Color.lerp(color, Colors.white, 0.15) ?? color;
-    }
-    if (luminance > 0.8) {
-      return Color.lerp(color, Colors.black, 0.2) ?? color;
-    }
-    return color;
   }
 }
 
+// 🧠 This function runs inside the Isolate
+Future<Color?> _getDominantColorFromUrl(String imageUrl) async {
+  final uri = Uri.tryParse(imageUrl);
+  if (uri == null) {
+    return null;
+  }
+
+  final client = HttpClient()..connectionTimeout = const Duration(seconds: 10);
+  try {
+    final request = await client.getUrl(uri);
+    final response = await request.close();
+
+    if (response.statusCode != HttpStatus.ok) {
+      return null;
+    }
+
+    final bytes = await consolidateHttpClientResponseBytes(response);
+    final decoded = img.decodeImage(bytes);
+    if (decoded == null) {
+      return null;
+    }
+
+    final resized = img.copyResize(
+      decoded,
+      width: 64,
+      height: 64,
+      interpolation: img.Interpolation.average,
+    );
+
+    final rgbBytes = resized.getBytes(order: img.ChannelOrder.rgb);
+    if (rgbBytes.isEmpty) {
+      return null;
+    }
+
+    int r = 0, g = 0, b = 0, pixelCount = 0;
+    for (var i = 0; i < rgbBytes.length; i += 3) {
+      r += rgbBytes[i];
+      g += rgbBytes[i + 1];
+      b += rgbBytes[i + 2];
+      pixelCount++;
+    }
+
+    if (pixelCount == 0) {
+      return null;
+    }
+
+    return Color.fromARGB(
+      0xFF,
+      (r / pixelCount).round(),
+      (g / pixelCount).round(),
+      (b / pixelCount).round(),
+    );
+  } on SocketException {
+    return null;
+  } on HttpException {
+    return null;
+  } on FormatException {
+    return null;
+  } finally {
+    client.close(force: true);
+  }
+}

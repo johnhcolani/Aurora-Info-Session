@@ -267,6 +267,15 @@ class _CurvedAppBar extends StatelessWidget {
                     letterSpacing: 0.6,
                   ),
                 ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 36,
+                  child: Image.asset(
+                    'assets/Aurora Text Logo.png',
+                    fit: BoxFit.contain,
+                    semanticLabel: 'Aurora logo',
+                  ),
+                ),
               ],
             ),
           ),

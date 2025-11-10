@@ -16,14 +16,21 @@ part 'random_image_bloc.freezed.dart';
 part 'random_image_event.dart';
 part 'random_image_state.dart';
 
+typedef DominantColorLoader = Future<Color?> Function(String imageUrl);
+
 class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
-  RandomImageBloc(this._getRandomImageUseCase)
-      : super(const RandomImageState()) {
+  RandomImageBloc(
+    this._getRandomImageUseCase, {
+    DominantColorLoader? loadDominantColor,
+  })  : _loadDominantColor =
+            loadDominantColor ?? _defaultDominantColorLoader,
+        super(const RandomImageState()) {
     on<_Started>(_onStarted);
     on<_RefreshRequested>(_onRefreshRequested);
   }
 
   final GetRandomImageUseCase _getRandomImageUseCase;
+  final DominantColorLoader _loadDominantColor;
 
   Future<void> _onStarted(
       _Started event,
@@ -65,10 +72,7 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
       // 🌈 Get dominant color using compute (Isolate)
       Color? dominantColor;
       try {
-        dominantColor = await compute<String, Color?>(
-          _getDominantColorFromUrl,
-          fetchedImage.url,
-        );
+        dominantColor = await _loadDominantColor(fetchedImage.url);
       } catch (_) {
         dominantColor = null;
       }
@@ -89,6 +93,10 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
       );
     }
   }
+}
+
+Future<Color?> _defaultDominantColorLoader(String imageUrl) {
+  return compute<String, Color?>(_getDominantColorFromUrl, imageUrl);
 }
 
 // 🧠 This function runs inside the Isolate

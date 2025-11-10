@@ -1,0 +1,16 @@
+import 'package:auto_route/auto_route.dart';
+
+import '../../features/random_image/presentation/view/random_image_page.dart';
+
+part 'app_router.gr.dart';
+
+@AutoRouterConfig(replaceInRouteName: 'Page,Route')
+class AppRouter extends RootStackRouter {
+  AppRouter({super.navigatorKey});
+
+  @override
+  final List<AutoRoute> routes = [
+    AutoRoute(page: RandomImageRoute.page, initial: true),
+  ];
+}
+

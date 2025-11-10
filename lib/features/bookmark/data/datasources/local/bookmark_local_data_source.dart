@@ -3,7 +3,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../models/bookmark_model.dart';
+import '../../models/bookmark_model.dart';
 
 class BookmarkLocalDataSource {
   BookmarkLocalDataSource();

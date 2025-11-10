@@ -8,6 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../../../../app/router/app_router.dart';
 import '../bloc/random_image_bloc.dart';
+import '../../../theme/presentation/cubit/theme_cubit.dart';
 
 typedef NetworkImageBuilder = Widget Function(
   BuildContext context,
@@ -26,6 +27,8 @@ class RandomImageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final themeCubit = context.watch<ThemeCubit>();
+    final isDark = themeCubit.state.themeMode == ThemeMode.dark;
 
     return BlocBuilder<RandomImageBloc, RandomImageState>(
       builder: (context, state) {
@@ -38,6 +41,7 @@ class RandomImageView extends StatelessWidget {
           theme,
         );
         const appBarHeight = 300.0;
+        final overlayOpacity = isDark ? 0.5 : 0.0;
 
         return Scaffold(
           extendBodyBehindAppBar: true,
@@ -50,82 +54,101 @@ class RandomImageView extends StatelessWidget {
               onAlbumPressed: () => _openAlbum(context),
             ),
           ),
-          body: AnimatedContainer(
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeInOut,
-            color: backgroundColor,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: _buildContent(
-                          context,
-                          state,
-                          foregroundColor,
-                          networkImageBuilder,
-                        ),
-                      ),
+          body: Stack(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                curve: Curves.easeInOut,
+                color: backgroundColor,
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
                     ),
-                    const SizedBox(height: 32),
-                    Semantics(
-                      button: true,
-                      enabled: !state.isLoading,
-                      label: 'Load another random image',
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 32),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: state.isLoading
-                                ? null
-                                : () => context.read<RandomImageBloc>().add(
-                                    const RandomImageEvent.refreshRequested(),
-                                  ),
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              backgroundColor: buttonBackgroundColor,
-                              foregroundColor: buttonForegroundColor,
-                              disabledBackgroundColor: buttonBackgroundColor
-                                  .withValues(alpha: 0.6),
-                              disabledForegroundColor: buttonForegroundColor
-                                  .withValues(alpha: 0.8),
-                              textStyle: theme.textTheme.titleMedium?.copyWith(
-                                color: buttonForegroundColor,
-                              ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: _buildContent(
+                              context,
+                              state,
+                              foregroundColor,
+                              networkImageBuilder,
                             ),
-                            child: state.isLoading
-                                ? SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 1.6,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        buttonForegroundColor,
-                                      ),
-                                    ),
-                                  )
-                                : Text(
-                                    'Another',
-                                    style: theme.textTheme.titleMedium
-                                        ?.copyWith(
-                                      color: buttonForegroundColor,
-                                    ),
-                                  ),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 32),
+                        Semantics(
+                          button: true,
+                          enabled: !state.isLoading,
+                          label: 'Load another random image',
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 32),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: state.isLoading
+                                    ? null
+                                    : () => context
+                                        .read<RandomImageBloc>()
+                                        .add(
+                                          const RandomImageEvent
+                                              .refreshRequested(),
+                                        ),
+                                style: ElevatedButton.styleFrom(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
+                                  backgroundColor: buttonBackgroundColor,
+                                  foregroundColor: buttonForegroundColor,
+                                  disabledBackgroundColor: buttonBackgroundColor
+                                      .withValues(alpha: 0.6),
+                                  disabledForegroundColor: buttonForegroundColor
+                                      .withValues(alpha: 0.8),
+                                  textStyle:
+                                      theme.textTheme.titleMedium?.copyWith(
+                                    color: buttonForegroundColor,
+                                  ),
+                                ),
+                                child: state.isLoading
+                                    ? SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 1.6,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                            buttonForegroundColor,
+                                          ),
+                                        ),
+                                      )
+                                    : Text(
+                                        'Another',
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                          color: buttonForegroundColor,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
-            ),
+              IgnorePointer(
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  opacity: overlayOpacity,
+                  child: Container(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -303,6 +326,8 @@ class _CurvedAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final themeCubit = context.watch<ThemeCubit>();
+    final isDark = themeCubit.state.themeMode == ThemeMode.dark;
     final effectiveBackground = backgroundColor.withValues(alpha: 0.92);
     return ClipPath(
       clipper: const AppBarBumpClipper(),
@@ -328,6 +353,15 @@ class _CurvedAppBar extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    IconButton(
+                      onPressed: themeCubit.toggleTheme,
+                      icon: Icon(
+                        isDark ? Icons.dark_mode : Icons.light_mode,
+                        color: foregroundColor,
+                      ),
+                      tooltip: isDark ? 'Switch to light mode' : 'Switch to dark mode',
+                    ),
+                    const SizedBox(width: 8),
                     IconButton(
                       onPressed: onAlbumPressed,
                       icon: Icon(

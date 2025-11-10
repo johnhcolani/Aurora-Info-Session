@@ -1,0 +1,256 @@
+Aurora Info Session — Project Walkthrough
+========================================
+
+Introduction
+------------
+Aurora Info Session is a Flutter application that demonstrates a feature-first
+architecture, asynchronous image processing with isolates, declarative
+navigation via auto_route, and a comprehensive testing strategy (unit, widget,
+bloc, integration, and golden). It also showcases both remote and local data
+layers, culminating in a markbook feature that persists bookmarked images using
+sqflite.
+
+Project Layout & Feature Architecture
+-------------------------------------
+The app follows a feature-first folder structure under `lib/features`, and each
+feature is split into **data**, **domain**, and **presentation** layers:
+
+- **data**: DTOs, data sources (remote/local), repository implementations.
+- **domain**: Entities, repository contracts, and use cases (application logic).
+- **presentation**: Blocs/Cubits, screens/widgets, and UI components.
+
+Example (Random Image feature):
+```
+lib/features/random_image/
+  data/
+    datasources/
+      random_image_remote_data_source.dart
+    repositories/
+      random_image_repository_impl.dart
+  domain/
+    entities/
+      random_image_entity.dart
+    repositories/
+      random_image_repository.dart
+    usecases/
+      get_random_image_usecase.dart
+  presentation/
+    bloc/
+    view/
+    widgets/
+```
+
+Dependency Injection & Setup
+----------------------------
+We use GetIt (`core/di/service_locator.dart`) to register singletons and
+factories for all dependencies. Example excerpt:
+```
+serviceLocator
+  ..registerLazySingleton(BookmarkLocalDataSource.new)
+  ..registerLazySingleton<BookmarkRepository>(
+    () => BookmarkRepositoryImpl(serviceLocator()),
+  )
+  ..registerFactory(
+    () => RandomImageBloc(
+      serviceLocator(),
+      addBookmarkUseCase: serviceLocator(),
+      removeBookmarkUseCase: serviceLocator(),
+      isBookmarkedUseCase: serviceLocator(),
+    ),
+  );
+```
+This keeps constructors clean and allows easy swapping of implementations during
+tests.
+
+Remote Data Source Flow
+-----------------------
+The random image module fetches data from a remote API using Dio. The request is
+performed inside an isolate via `compute` to avoid blocking the UI thread:
+```
+final result = await compute<Map<String, dynamic>, Map<String, dynamic>>(
+  _fetchRandomImage,
+  <String, dynamic>{
+    'baseUrl': options.baseUrl.isEmpty ? AppConstants.baseUrl : options.baseUrl,
+    'path': AppConstants.randomImagePath,
+    'headers': options.headers,
+  },
+);
+```
+The result is unmarshalled into a `RandomImageModel`, converted to the domain
+`RandomImageEntity`, and exposed through a repository.
+
+Dominant Color Extraction with Isolates
+---------------------------------------
+When an image is loaded, we spin up another isolate (again using `compute`) to
+find its dominant color without blocking the UI. The heavy work decodes the
+bytes using the `image` package and averages the RGB values. An abridged version
+of `_getDominantColorFromUrl`:
+```
+Future<Color?> _getDominantColorFromUrl(String imageUrl) async {
+  final client = HttpClient()..connectionTimeout = const Duration(seconds: 10);
+  final response = await (await client.getUrl(Uri.parse(imageUrl))).close();
+  if (response.statusCode != HttpStatus.ok) return null;
+
+  final bytes = await consolidateHttpClientResponseBytes(response);
+  final decoded = img.decodeImage(bytes);
+  if (decoded == null) return null;
+
+  final resized = img.copyResize(decoded, width: 64, height: 64);
+  final rgbBytes = resized.getBytes(order: img.ChannelOrder.rgb);
+
+  int r = 0, g = 0, b = 0;
+  for (var i = 0; i < rgbBytes.length; i += 3) {
+    r += rgbBytes[i];
+    g += rgbBytes[i + 1];
+    b += rgbBytes[i + 2];
+  }
+
+  final pixelCount = rgbBytes.length ~/ 3;
+  return Color.fromARGB(
+    0xFF,
+    (r / pixelCount).round(),
+    (g / pixelCount).round(),
+    (b / pixelCount).round(),
+  );
+}
+```
+
+Navigation with auto_route
+--------------------------
+Routes are declared in `app_router.dart` and generated via build_runner. Example:
+```
+@AutoRouterConfig(replaceInRouteName: 'Page,Route')
+class AppRouter extends RootStackRouter {
+  @override
+  final List<AutoRoute> routes = const [
+    AutoRoute(page: RandomImageRoute.page, initial: true),
+    AutoRoute(page: BookmarkAlbumRoute.page),
+    AutoRoute(page: BookmarkDetailRoute.page),
+  ];
+}
+```
+Navigate using `context.pushRoute(const BookmarkAlbumRoute());` or pass
+arguments: `context.pushRoute(BookmarkDetailRoute(url: bookmark.url));`.
+
+Random Image Screen & Bloc
+--------------------------
+The screen listens to `RandomImageBloc` to display loading, success, or failure
+states. Bookmark toggling is reflected via a markbook icon overlay. Simplified
+snippet:
+```
+class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
+  RandomImageBloc(
+    this._getRandomImageUseCase, {
+    required AddBookmarkUseCase addBookmarkUseCase,
+    required RemoveBookmarkUseCase removeBookmarkUseCase,
+    required IsBookmarkedUseCase isBookmarkedUseCase,
+  }) : super(const RandomImageState()) {
+    on<_Started>(_onStarted);
+    on<_RefreshRequested>(_onRefreshRequested);
+    on<_BookmarkToggled>(_onBookmarkToggled);
+  }
+
+  Future<void> _onBookmarkToggled(... ) async {
+    if (state.image == null) return;
+    try {
+      state.isBookmarked
+          ? await _removeBookmarkUseCase(state.image!.url)
+          : await _addBookmarkUseCase(state.image!.url);
+      emit(state.copyWith(isBookmarked: !state.isBookmarked, errorMessage: null));
+    } catch (_) {
+      emit(state.copyWith(errorMessage: 'Unable to update markbook. Please try again.'));
+    }
+  }
+}
+```
+
+Bookmark Feature & Local Persistence
+------------------------------------
+The markbook uses sqflite to store bookmarked image URLs locally. Data source:
+```
+class BookmarkLocalDataSource {
+  static const _databaseName = 'aurora_bookmarks.db';
+  static const _tableBookmarks = 'bookmarks';
+
+  Future<void> insertBookmark(String url) async {
+    final db = await database;
+    await db.insert(
+      _tableBookmarks,
+      <String, dynamic>{
+        'url': url,
+        'created_at': DateTime.now().toIso8601String(),
+      },
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
+  }
+}
+```
+The `BookmarkAlbumCubit` loads saved bookmarks and displays them on a grid screen.
+Tapping a tile opens the `BookmarkDetailPage`, which uses `CachedNetworkImage`
+inside an `InteractiveViewer` for pinch-to-zoom.
+
+Testing Strategy
+----------------
+The project demonstrates every major Flutter testing style:
+
+1. **Unit Tests** (`flutter test`):
+   - `random_image_bloc_test.dart` verifies success/failure states and bookmark
+     toggling using `bloc_test` and `mocktail` for mocks.
+
+2. **Widget Tests**:
+   - `random_image_view_test.dart` checks loading UI, disabled/enabled states,
+     and the presence of the Aurora logo in the header.
+
+3. **Bloc Tests**: (part of unit tests above) but highlight mocking use cases and
+   verifying emitted states without hitting real isolates or network.
+
+4. **Integration Test** (`integration_test/random_image_flow_test.dart`):
+   - Launches the full app on an emulator, taps the “Another” button, and
+     ensures the flow works end-to-end.
+
+5. **Golden Test** (`random_image_view_golden_test.dart`):
+   - Uses `golden_toolkit` to render the success state with a mocked network
+     image builder, capturing pixel-perfect snapshots.
+
+Command recap:
+- `flutter test` — run unit, widget, bloc, and golden tests.
+- `flutter test integration_test/random_image_flow_test.dart` — run integration.
+- `flutter test --update-goldens ...` — refresh golden baselines after UI changes.
+
+Development Timeline Narrative
+------------------------------
+1. **Kickoff**: Created Flutter app, set up feature-first structure, and wired
+   GetIt for DI.
+2. **Random Image Feature**: Implemented remote data source with Dio, entity,
+   use case, and Bloc. Added UI with palette extraction using isolates.
+3. **Navigation Layer**: Introduced auto_route for clean declarative routing.
+4. **Testing Foundation**: Added unit, widget, and bloc tests. Introduced golden
+   tests for visual regression and an integration test against an emulator.
+5. **Markbook Expansion**: Added local persistence via sqflite, created bookmark
+   album and detail pages, and extended the Bloc to support bookmarking.
+6. **Polish & Docs**: Adjusted UI spacing, icons, and generated this
+   walkthrough.
+
+Tips for Presentation
+---------------------
+- Show the folder structure in your IDE to highlight the clean separation of
+  layers.
+- Demonstrate isolates by pointing to `_getDominantColorFromUrl` and explaining
+  why compute() is used.
+- Run `flutter test` live to showcase the breadth of automated coverage.
+- Open the markbook album screen on the emulator, add/remove bookmarks, and show
+  the database persisting results between reloads.
+- Mention the use of `build_runner` to regenerate freezed/auto_route code after
+  model or router changes.
+
+Helpful Commands Summary
+------------------------
+- `flutter pub run build_runner build --delete-conflicting-outputs`
+- `flutter pub get`
+- `flutter run -d emulator-5554`
+- `flutter test`
+- `flutter test --update-goldens test/features/random_image/presentation/widgets/random_image_view_golden_test.dart`
+
+With this overview, you can narrate the journey from project setup to final
+feature set, explaining architecture decisions, asynchronous processing, and the
+comprehensive testing strategy that ensures the app’s quality.

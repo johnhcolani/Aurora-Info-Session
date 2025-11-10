@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:aurora_info_session/features/random_image/domain/entities/random_image_entity.dart';
 import 'package:aurora_info_session/features/random_image/presentation/bloc/random_image_bloc.dart';
 import 'package:aurora_info_session/features/random_image/presentation/widgets/random_image_view.dart';
+import 'package:aurora_info_session/features/theme/presentation/cubit/theme_cubit.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,8 +50,13 @@ void main() {
       );
 
       await tester.pumpWidgetBuilder(
-        BlocProvider<RandomImageBloc>.value(
-          value: bloc,
+        MultiBlocProvider(
+          providers: [
+            BlocProvider<ThemeCubit>(
+              create: (_) => ThemeCubit()..setTheme(ThemeMode.light),
+            ),
+            BlocProvider<RandomImageBloc>.value(value: bloc),
+          ],
           child: RandomImageView(
             networkImageBuilder: (context, imageUrl, accentColor) {
               return Image.asset(

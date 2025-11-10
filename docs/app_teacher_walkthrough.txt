@@ -1,0 +1,259 @@
+Aurora Info Session — Teacher Walkthrough
+==========================================
+
+Lesson Overview
+---------------
+Welcome, class! Today we’ll walk through how the Aurora Info Session app went from
+an empty Flutter project to a polished product featuring remote data, isolate-based
+image processing, layered architecture, persistence with sqflite, and a full suite
+of tests. Follow along and imagine you are building this app with me step by step.
+
+Part 1: Project Initialization
+------------------------------
+1. **Create the project**:
+   ```
+   flutter create aurora_info_session
+   cd aurora_info_session
+   ```
+2. **Set up dependencies** in `pubspec.yaml`:
+   - Core: `flutter_bloc`, `equatable`, `dio`, `cached_network_image`.
+   - Architecture helpers: `freezed_annotation`, `get_it`.
+   - Async processing: `image` package.
+   - Navigation: `auto_route`.
+   - Persistence: `sqflite`, `path_provider`.
+   - Testing: `bloc_test`, `mocktail`, `golden_toolkit`, `integration_test`.
+
+3. **Run initial setup commands**:
+   ```
+   flutter pub get
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+
+Part 2: Architectural Blueprint
+-------------------------------
+We adopt a feature-first structure with **data**, **domain**, and **presentation**
+layers. The idea is to isolate responsibilities:
+
+```
+lib/
+  core/          # shared services (DI, network, constants)
+  features/
+    random_image/
+      data/
+      domain/
+      presentation/
+    bookmark/
+      ...
+  app/
+    router/
+    theme/
+```
+
+Each feature’s layers contain:
+- **data**: DTOs, data sources (remote/local), repository implementation.
+- **domain**: Entities, repository contracts, use cases.
+- **presentation**: Bloc/Cubit and UI widgets/screens.
+
+Part 3: Remote Data Fetching with Isolates
+------------------------------------------
+1. **Remote data source** (`RandomImageRemoteDataSource`) uses Dio to call Unsplash.
+2. To keep the UI responsive, heavy work runs in isolates via `compute`.
+   ```
+   final result = await compute<Map<String, dynamic>, Map<String, dynamic>>(
+     _fetchRandomImage,
+     <String, dynamic>{
+       'baseUrl': AppConstants.baseUrl,
+       'path': AppConstants.randomImagePath,
+       'headers': options.headers,
+     },
+   );
+   ```
+3. **Repository** translates the response into a domain entity.
+4. **Use case** (`GetRandomImageUseCase`) acts as the entry point for the Bloc.
+
+Part 4: Dominant Color Extraction (Isolate Example)
+---------------------------------------------------
+We wanted the background to reflect the dominant color of the image. To do this
+without blocking the UI thread, we run color extraction inside `compute`:
+```dart
+Future<Color?> _getDominantColorFromUrl(String imageUrl) async {
+  final response = await (await client.getUrl(Uri.parse(imageUrl))).close();
+  if (response.statusCode != HttpStatus.ok) return null;
+
+  final bytes = await consolidateHttpClientResponseBytes(response);
+  final decoded = img.decodeImage(bytes);
+  if (decoded == null) return null;
+
+  final resized = img.copyResize(decoded, width: 64, height: 64);
+  final rgbBytes = resized.getBytes(order: img.ChannelOrder.rgb);
+
+  int r = 0, g = 0, b = 0;
+  for (var i = 0; i < rgbBytes.length; i += 3) {
+    r += rgbBytes[i];
+    g += rgbBytes[i + 1];
+    b += rgbBytes[i + 2];
+  }
+  final pixelCount = rgbBytes.length ~/ 3;
+  return Color.fromARGB(
+    0xFF,
+    (r / pixelCount).round(),
+    (g / pixelCount).round(),
+    (b / pixelCount).round(),
+  );
+}
+```
+We teach students why isolates are important: all heavy processing should be off
+loaded from the main isolate to keep the user experience smooth.
+
+Part 5: Presentation Layer with Bloc
+------------------------------------
+1. **Bloc setup**:
+   - Events: `_Started`, `_RefreshRequested`, `_BookmarkToggled`.
+   - State: tracks status, image, background color, bookmark flag, error.
+   ```dart
+   class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
+     RandomImageBloc(
+       this._getRandomImageUseCase, {
+       required AddBookmarkUseCase addBookmarkUseCase,
+       required RemoveBookmarkUseCase removeBookmarkUseCase,
+       required IsBookmarkedUseCase isBookmarkedUseCase,
+     }) : super(const RandomImageState()) {
+       on<_Started>(_onStarted);
+       on<_RefreshRequested>(_onRefreshRequested);
+       on<_BookmarkToggled>(_onBookmarkToggled);
+     }
+     // handlers...
+   }
+   ```
+2. **UI widget** (`RandomImageView`): listens to the Bloc and lays out an image,
+   the bookmark icon, and a button to load a new image.
+3. **Navigation**: `context.pushRoute(const BookmarkAlbumRoute());`
+
+Part 6: Navigation with auto_route
+----------------------------------
+1. Define routes in `app_router.dart`:
+   ```dart
+   @AutoRouterConfig(replaceInRouteName: 'Page,Route')
+   class AppRouter extends RootStackRouter {
+     @override
+     final List<AutoRoute> routes = const [
+       AutoRoute(page: RandomImageRoute.page, initial: true),
+       AutoRoute(page: BookmarkAlbumRoute.page),
+       AutoRoute(page: BookmarkDetailRoute.page),
+     ];
+   }
+   ```
+2. Generate the router:
+   ```
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+3. Push routes in the UI with `context.pushRoute(...)`.
+
+Part 7: Markbook Feature & Local Persistence
+--------------------------------------------
+1. **BookmarkLocalDataSource** uses sqflite to store bookmarked URLs.
+   ```dart
+   await db.insert(
+     'bookmarks',
+     {
+       'url': url,
+       'created_at': DateTime.now().toIso8601String(),
+     },
+     conflictAlgorithm: ConflictAlgorithm.ignore,
+   );
+   ```
+2. **Repository** implements add/remove/get/isBookmarked.
+3. **Use cases** provide the domain API for the presentation layer.
+4. **BookmarkAlbumCubit** loads bookmarks and exposes them to the album screen.
+5. **BookmarkAlbumPage** renders a grid of saved images; tapping a tile opens
+   `BookmarkDetailPage`, which shows the full-size image with zoom support.
+
+Part 8: Dependency Injection Recap
+----------------------------------
+We review the service locator and highlight how to expose both remote and local
+layers:
+```dart
+serviceLocator
+  ..registerLazySingleton(DioClient.new)
+  ..registerLazySingleton(BookmarkLocalDataSource.new)
+  ..registerLazySingleton<BookmarkRepository>(
+    () => BookmarkRepositoryImpl(serviceLocator()),
+  )
+  ..registerLazySingleton(() => AddBookmarkUseCase(serviceLocator()))
+  ..registerFactory(() => RandomImageBloc(
+        serviceLocator(),
+        addBookmarkUseCase: serviceLocator(),
+        removeBookmarkUseCase: serviceLocator(),
+        isBookmarkedUseCase: serviceLocator(),
+      ))
+  ..registerFactory(() => BookmarkAlbumCubit(serviceLocator()));
+```
+Students see how DI makes testing and feature growth simpler.
+
+Part 9: Testing the Application
+-------------------------------
+We stress that a production-ready app needs layered tests.
+
+1. **Unit/Bloc Tests**:
+   - `random_image_bloc_test.dart` uses `bloc_test` and `mocktail` to simulate
+     use case outcomes.
+   ```dart
+   blocTest<RandomImageBloc, RandomImageState>(
+     'emits loading then success when image is fetched',
+     build: () {
+       when(() => getRandomImageUseCase.call(any())).thenAnswer(
+         (_) async => const DataSuccess<RandomImageEntity>(testEntity),
+       );
+       when(() => isBookmarkedUseCase.call(any())).thenAnswer((_) async => false);
+       return RandomImageBloc(...);
+     },
+     act: (bloc) => bloc.add(const RandomImageEvent.started()),
+     expect: () => [...],
+   );
+   ```
+
+2. **Widget Tests**:
+   - Ensure loading indicators and UI states appear correctly.
+
+3. **Golden Tests**:
+   - Use `golden_toolkit` to capture the success state layout. We inject a fake
+     image via `networkImageBuilder` to keep tests deterministic.
+
+4. **Integration Tests**:
+   - Full app flow using `integration_test/random_image_flow_test.dart`. Run on
+     an emulator to demonstrate hot reload vs. full run.
+
+5. **Running tests**:
+   ```
+   flutter test
+   flutter test integration_test/random_image_flow_test.dart
+   flutter test --update-goldens test/features/random_image/presentation/widgets/random_image_view_golden_test.dart
+   ```
+
+Part 10: Final Polish & Demo Prep
+---------------------------------
+1. **UI adjustments**: Tweaked bookmark icon position, button spacing, and added
+   album button in the curved app bar.
+2. **Documentation**: Wrote `docs/app_overview.txt` and this teacher walkthrough
+   to narrate the project journey.
+3. **Git Workflow**: Committed each major step with meaningful messages and
+   pushed to GitHub.
+4. **Video Checklist**:
+   - Show folder structure.
+   - Explain DI setup.
+   - Walk through isolate-based dominant color extraction.
+   - Demo navigation and markbook.
+   - Run tests in terminal.
+   - Highlight golden baseline and visual regression strategy.
+
+Class Summary
+-------------
+By the end of this walkthrough, students understand how to:
+- Organize a scalable Flutter app with feature-based architecture.
+- Implement remote fetching and background processing using isolates.
+- Persist data locally with sqflite.
+- Navigate declaratively with auto_route.
+- Cover the app with unit, widget, bloc, integration, and golden tests.
+
+Encourage everyone to clone the repository, run the tests, and extend the app
+(e.g., add categories, pagination, or offline mode). That concludes our session!

@@ -1,11 +1,12 @@
 import 'package:aurora_info_session/features/random_image/presentation/bloc/random_image_bloc.dart';
 import 'package:aurora_info_session/features/random_image/presentation/widgets/random_image_view.dart';
+import 'package:aurora_info_session/features/theme/presentation/cubit/theme_cubit.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class _MockRandomImageBloc
     extends MockBloc<RandomImageEvent, RandomImageState>
@@ -13,13 +14,16 @@ class _MockRandomImageBloc
 
 void main() {
   late _MockRandomImageBloc bloc;
+  late ThemeCubit themeCubit;
 
   setUp(() {
     bloc = _MockRandomImageBloc();
+    themeCubit = ThemeCubit()..setTheme(ThemeMode.light);
   });
 
   tearDown(() {
     bloc.close();
+    themeCubit.close();
   });
 
   testWidgets(
@@ -38,8 +42,11 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: BlocProvider<RandomImageBloc>.value(
-            value: bloc,
+          home: MultiBlocProvider(
+            providers: [
+              BlocProvider<ThemeCubit>.value(value: themeCubit),
+              BlocProvider<RandomImageBloc>.value(value: bloc),
+            ],
             child: const RandomImageView(),
           ),
         ),
@@ -66,8 +73,11 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: BlocProvider<RandomImageBloc>.value(
-            value: bloc,
+          home: MultiBlocProvider(
+            providers: [
+              BlocProvider<ThemeCubit>.value(value: themeCubit),
+              BlocProvider<RandomImageBloc>.value(value: bloc),
+            ],
             child: const RandomImageView(),
           ),
         ),

@@ -1,6 +1,6 @@
 import '../../domain/entities/bookmark_entity.dart';
 import '../../domain/repositories/bookmark_repository.dart';
-import '../datasources/bookmark_local_data_source.dart';
+import '../datasources/local/bookmark_local_data_source.dart';
 
 class BookmarkRepositoryImpl implements BookmarkRepository {
   BookmarkRepositoryImpl(this._localDataSource);

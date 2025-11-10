@@ -7,8 +7,19 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../bloc/random_image_bloc.dart';
 
+typedef NetworkImageBuilder = Widget Function(
+  BuildContext context,
+  String imageUrl,
+  Color accentColor,
+);
+
 class RandomImageView extends StatelessWidget {
-  const RandomImageView({super.key});
+  const RandomImageView({
+    super.key,
+    this.networkImageBuilder,
+  });
+
+  final NetworkImageBuilder? networkImageBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +62,12 @@ class RandomImageView extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Center(
-                        child: _buildContent(context, state, foregroundColor),
+                        child: _buildContent(
+                          context,
+                          state,
+                          foregroundColor,
+                          networkImageBuilder,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -113,6 +129,7 @@ class RandomImageView extends StatelessWidget {
     BuildContext context,
     RandomImageState state,
     Color foregroundColor,
+    NetworkImageBuilder? networkImageBuilder,
   ) {
     if (state.isLoading && state.image == null) {
       return _LoadingIndicator(color: foregroundColor);
@@ -167,18 +184,20 @@ class RandomImageView extends StatelessWidget {
               clipper: const TopBumpClipper(),
               child: AspectRatio(
                 aspectRatio: 1,
-                child: CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                  fadeInDuration: const Duration(milliseconds: 300),
-                  fadeOutDuration: const Duration(milliseconds: 200),
-                  placeholder: (_, __) =>
-                      _LoadingIndicator(color: foregroundColor),
-                  errorWidget: (_, __, ___) => _ErrorMessage(
-                    message: 'Could not load image.',
-                    color: foregroundColor,
-                  ),
-                ),
+                child: networkImageBuilder != null
+                    ? networkImageBuilder!(context, imageUrl, foregroundColor)
+                    : CachedNetworkImage(
+                        imageUrl: imageUrl,
+                        fit: BoxFit.cover,
+                        fadeInDuration: const Duration(milliseconds: 300),
+                        fadeOutDuration: const Duration(milliseconds: 200),
+                        placeholder: (_, __) =>
+                            _LoadingIndicator(color: foregroundColor),
+                        errorWidget: (_, __, ___) => _ErrorMessage(
+                          message: 'Could not load image.',
+                          color: foregroundColor,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 12),

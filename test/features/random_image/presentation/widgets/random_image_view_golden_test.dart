@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:aurora_info_session/features/random_image/domain/entities/random_image_entity.dart';
 import 'package:aurora_info_session/features/random_image/presentation/bloc/random_image_bloc.dart';
 import 'package:aurora_info_session/features/random_image/presentation/widgets/random_image_view.dart';
 import 'package:bloc_test/bloc_test.dart';
@@ -29,23 +32,34 @@ void main() {
       bloc.close();
     });
 
-    testGoldens('renders failure state layout', (tester) async {
-      const failureState = RandomImageState(
-        status: RandomImageStatus.failure,
-        errorMessage: 'Unable to load image.',
+    testGoldens('renders success state layout with image', (tester) async {
+      const successState = RandomImageState(
+        status: RandomImageStatus.success,
+        image: RandomImageEntity(
+          url: 'https://example.com/image.jpg',
+        ),
+        backgroundColor: Color(0xFF336699),
       );
 
-      when(() => bloc.state).thenReturn(failureState);
+      when(() => bloc.state).thenReturn(successState);
       whenListen(
         bloc,
-        Stream<RandomImageState>.value(failureState),
-        initialState: failureState,
+        Stream<RandomImageState>.value(successState),
+        initialState: successState,
       );
 
       await tester.pumpWidgetBuilder(
         BlocProvider<RandomImageBloc>.value(
           value: bloc,
-          child: const RandomImageView(),
+          child: RandomImageView(
+            networkImageBuilder: (context, imageUrl, accentColor) {
+              return Image.asset(
+                'assets/Aurora Text Logo.png',
+                fit: BoxFit.cover,
+                semanticLabel: 'Aurora logo',
+              );
+            },
+          ),
         ),
         wrapper: materialAppWrapper(
           theme: ThemeData.light(),
@@ -55,7 +69,7 @@ void main() {
 
       await screenMatchesGolden(
         tester,
-        'random_image_view_failure_state',
+        'random_image_view_success_state',
       );
     });
   });

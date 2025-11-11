@@ -1,7 +1,8 @@
+import 'dart:math' as math;
+import 'dart:ui';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -70,6 +71,7 @@ class RandomImageView extends StatelessWidget {
                               state,
                               foregroundColor,
                               networkImageBuilder,
+                              backgroundColor,
                             ),
                           ),
                         ),
@@ -86,8 +88,8 @@ class RandomImageView extends StatelessWidget {
                                 onPressed: state.isLoading
                                     ? null
                                     : () => context.read<RandomImageBloc>().add(
-                                        const RandomImageEvent.refreshRequested(),
-                                      ),
+                                          const RandomImageEvent.refreshRequested(),
+                                        ),
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 16,
@@ -114,16 +116,16 @@ class RandomImageView extends StatelessWidget {
                                           strokeWidth: 1.6,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                                buttonForegroundColor,
-                                              ),
+                                            buttonForegroundColor,
+                                          ),
                                         ),
                                       )
                                     : Text(
                                         'Another',
                                         style: theme.textTheme.titleMedium
                                             ?.copyWith(
-                                              color: buttonForegroundColor,
-                                            ),
+                                          color: buttonForegroundColor,
+                                        ),
                                       ),
                               ),
                             ),
@@ -157,6 +159,7 @@ class RandomImageView extends StatelessWidget {
     RandomImageState state,
     Color foregroundColor,
     NetworkImageBuilder? networkImageBuilder,
+    Color backgroundColor,
   ) {
     if (state.isLoading && state.image == null) {
       return _LoadingIndicator(color: foregroundColor);
@@ -179,6 +182,8 @@ class RandomImageView extends StatelessWidget {
 
     final imageName =
         Uri.tryParse(imageUrl)?.pathSegments.lastOrNull ?? 'Random image';
+    final ellipseData =
+        _ellipseData(imageName, backgroundColor, foregroundColor);
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
@@ -208,7 +213,17 @@ class RandomImageView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Stack(
+              clipBehavior: Clip.none,
               children: [
+                Positioned(
+                  top: -96,
+                  left: 0,
+                  right: 0,
+                  child: _GlowingEllipse(
+                    data: ellipseData,
+                    size: const Size(210, 150),
+                  ),
+                ),
                 ClipPath(
                   clipper: const TopBumpClipper(),
                   child: AspectRatio(
@@ -297,6 +312,128 @@ class RandomImageView extends StatelessWidget {
     return Color.lerp(background, Colors.black, 0.25) ??
         background.withValues(alpha: 0.9);
   }
+
+  EllipseData _ellipseData(
+    String imageName,
+    Color backgroundColor,
+    Color foregroundColor,
+  ) {
+    final trimmed = imageName.trim();
+    final character = trimmed.isEmpty
+        ? 'A'
+        : trimmed.characters.first.toUpperCase();
+    final number =
+        ((imageName.hashCode & 0x7fffffff) % 9) + 1; // range 1-9 for variety
+    return EllipseData(
+      color: _glowColor(backgroundColor, foregroundColor),
+      character: character,
+      number: number,
+    );
+  }
+
+  Color _glowColor(Color background, Color foreground) {
+    const base = Colors.deepOrange;
+    final blended = Color.lerp(base, Colors.orangeAccent, 0.35) ?? base;
+    return blended.withValues(alpha: 0.85);
+  }
+}
+
+class EllipseData {
+  const EllipseData({
+    required this.color,
+    this.angle = 0,
+    this.number = 1,
+    this.character = 'T',
+  });
+
+  final Color color;
+  final double angle;
+  final int number;
+  final String character;
+}
+
+class _GlowingEllipse extends StatelessWidget {
+  const _GlowingEllipse({
+    required this.data,
+    this.size = const Size(200, 140),
+    super.key,
+  });
+
+  final EllipseData data;
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Center(
+        child: SizedBox(
+          width: size.width,
+          height: size.height,
+          child: CustomPaint(
+            painter: SingleGlowEllipsePainter(data: data),
+            isComplex: true,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SingleGlowEllipsePainter extends CustomPainter {
+  const SingleGlowEllipsePainter({required this.data});
+
+  final EllipseData data;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final centerX = size.width / 2;
+    final centerY = size.height / 2;
+
+    canvas.save();
+    canvas.translate(centerX, centerY);
+    canvas.rotate(data.angle);
+
+    final rect = Rect.fromCenter(center: Offset.zero, width: 120, height: 80);
+
+    const glowLayers = 8;
+    for (var i = glowLayers; i > 0; i--) {
+      final glowPaint = Paint()
+        ..color = data.color.withOpacity(0.5 / i)
+        ..strokeWidth = 2 + (i * 3)
+        ..style = PaintingStyle.stroke
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, i * 3.0);
+      canvas.drawOval(rect, glowPaint);
+    }
+
+    final basePaint = Paint()
+      ..color = data.color
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+    canvas.drawOval(rect, basePaint);
+
+    canvas.restore();
+
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: '${data.number}${data.character}',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    textPainter.paint(
+      canvas,
+      Offset(centerX - textPainter.width / 2, centerY - textPainter.height / 2),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
 
 Widget _buildImageContentWidget({

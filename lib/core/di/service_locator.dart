@@ -15,6 +15,7 @@ import '../../features/random_image/domain/repositories/random_image_repository.
 import '../../features/random_image/domain/usecases/get_random_image_usecase.dart';
 import '../../features/random_image/presentation/bloc/random_image_bloc.dart';
 import '../../features/theme/presentation/cubit/theme_cubit.dart';
+import '../../features/splash/presentation/bloc/splash_bloc.dart';
 import '../network/dio_client.dart';
 
 final GetIt serviceLocator = GetIt.instance;
@@ -56,6 +57,9 @@ Future<void> setupDependencies() async {
         removeBookmarkUseCase: serviceLocator(),
         isBookmarkedUseCase: serviceLocator(),
       ),
+    )
+    ..registerFactory(
+      SplashBloc.new,
     )
     ..registerFactory(
       () => BookmarkAlbumCubit(serviceLocator()),

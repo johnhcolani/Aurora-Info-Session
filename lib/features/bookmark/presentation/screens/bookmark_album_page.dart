@@ -26,56 +26,79 @@ class _BookmarkAlbumView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Markbook'),
-        actions: [
-          IconButton(
-            onPressed: () =>
-                context.read<BookmarkAlbumCubit>().loadBookmarks(),
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-          ),
-        ],
+    final theme = Theme.of(context);
+
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF141824), Color(0xFF65719A)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
       ),
-      body: BlocBuilder<BookmarkAlbumCubit, BookmarkAlbumState>(
-        builder: (context, state) {
-          if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state.errorMessage != null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  state.errorMessage!,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ),
-            );
-          }
-
-          if (state.bookmarks.isEmpty) {
-            return const _EmptyBookmarks();
-          }
-
-          return GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              childAspectRatio: 0.8,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: const Padding(
+            padding: EdgeInsets.only(left: 4),
+            child: Center(
+              child: Text('Bookmarks', textAlign: TextAlign.center),
             ),
-            itemCount: state.bookmarks.length,
-            itemBuilder: (context, index) {
-              final bookmark = state.bookmarks[index];
-              return _BookmarkTile(bookmark: bookmark);
-            },
-          );
-        },
+          ),
+          actions: [
+            IconButton(
+              onPressed: () =>
+                  context.read<BookmarkAlbumCubit>().loadBookmarks(),
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Refresh',
+            ),
+            const SizedBox(width: 4),
+          ],
+        ),
+        body: BlocBuilder<BookmarkAlbumCubit, BookmarkAlbumState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state.errorMessage != null) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    state.errorMessage!,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            if (state.bookmarks.isEmpty) {
+              return const _EmptyBookmarks();
+            }
+
+            return GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.8,
+              ),
+              itemCount: state.bookmarks.length,
+              itemBuilder: (context, index) {
+                final bookmark = state.bookmarks[index];
+                return _BookmarkTile(bookmark: bookmark);
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -88,47 +111,58 @@ class _BookmarkTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onTap: () => context.pushRoute(BookmarkDetailRoute(url: bookmark.url)),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: const LinearGradient(
+            colors: [Color(0xAA0D101A), Color(0x110D101A)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: CachedNetworkImage(
-                imageUrl: bookmark.url,
-                fit: BoxFit.cover,
-                placeholder: (_, __) => const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                errorWidget: (_, __, ___) => const _ImageErrorIndicator(),
-              ),
-            ),
-            Positioned(
-              left: 12,
-              right: 12,
-              bottom: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.55),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  _displayUrl(bookmark.url),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: CachedNetworkImage(
+                  imageUrl: bookmark.url,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  errorWidget: (_, __, ___) => const _ImageErrorIndicator(),
                 ),
               ),
-            ),
-          ],
+              Positioned(
+                left: 12,
+                right: 12,
+                bottom: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.45),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    _displayUrl(bookmark.url),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -148,29 +182,38 @@ class _EmptyBookmarks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.collections_bookmark_outlined,
-            size: 64,
-            color: Theme.of(context).colorScheme.primary,
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withValues(alpha: 0.12),
+            ),
+            child: Icon(
+              Icons.collections_bookmark_outlined,
+              size: 48,
+              color: Colors.white.withValues(alpha: 0.7),
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(
             'No marked images yet.',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             'Tap the bookmark icon on a random image to save it here.',
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).textTheme.bodyMedium?.color?.withValues(
-                        alpha: 0.7,
-                      ),
-                ),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.7),
+            ),
           ),
         ],
       ),
@@ -186,11 +229,7 @@ class _ImageErrorIndicator extends StatelessWidget {
     return Container(
       color: Colors.grey.withValues(alpha: 0.2),
       child: const Center(
-        child: Icon(
-          Icons.broken_image_outlined,
-          size: 40,
-          color: Colors.grey,
-        ),
+        child: Icon(Icons.broken_image_outlined, size: 40, color: Colors.grey),
       ),
     );
   }

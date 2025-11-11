@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:aurora_info_session/features/random_image/domain/entities/random_image_entity.dart';
 import 'package:aurora_info_session/features/random_image/presentation/bloc/random_image_bloc.dart';
 import 'package:aurora_info_session/features/random_image/presentation/widgets/random_image_view.dart';

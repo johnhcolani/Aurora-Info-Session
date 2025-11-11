@@ -10,17 +10,11 @@ import '../../../../app/router/app_router.dart';
 import '../bloc/random_image_bloc.dart';
 import '../../../theme/presentation/cubit/theme_cubit.dart';
 
-typedef NetworkImageBuilder = Widget Function(
-  BuildContext context,
-  String imageUrl,
-  Color accentColor,
-);
+typedef NetworkImageBuilder =
+    Widget Function(BuildContext context, String imageUrl, Color accentColor);
 
 class RandomImageView extends StatelessWidget {
-  const RandomImageView({
-    super.key,
-    this.networkImageBuilder,
-  });
+  const RandomImageView({super.key, this.networkImageBuilder});
 
   final NetworkImageBuilder? networkImageBuilder;
 
@@ -91,25 +85,21 @@ class RandomImageView extends StatelessWidget {
                               child: ElevatedButton(
                                 onPressed: state.isLoading
                                     ? null
-                                    : () => context
-                                        .read<RandomImageBloc>()
-                                        .add(
-                                          const RandomImageEvent
-                                              .refreshRequested(),
-                                        ),
+                                    : () => context.read<RandomImageBloc>().add(
+                                        const RandomImageEvent.refreshRequested(),
+                                      ),
                                 style: ElevatedButton.styleFrom(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                   backgroundColor: buttonBackgroundColor,
                                   foregroundColor: buttonForegroundColor,
                                   disabledBackgroundColor: buttonBackgroundColor
                                       .withValues(alpha: 0.6),
                                   disabledForegroundColor: buttonForegroundColor
                                       .withValues(alpha: 0.8),
-                                  textStyle:
-                                      theme.textTheme.titleMedium?.copyWith(
-                                    color: buttonForegroundColor,
-                                  ),
+                                  textStyle: theme.textTheme.titleMedium
+                                      ?.copyWith(color: buttonForegroundColor),
                                 ),
                                 child: state.isLoading
                                     ? SizedBox(
@@ -119,16 +109,16 @@ class RandomImageView extends StatelessWidget {
                                           strokeWidth: 1.6,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                            buttonForegroundColor,
-                                          ),
+                                                buttonForegroundColor,
+                                              ),
                                         ),
                                       )
                                     : Text(
                                         'Another',
                                         style: theme.textTheme.titleMedium
                                             ?.copyWith(
-                                          color: buttonForegroundColor,
-                                        ),
+                                              color: buttonForegroundColor,
+                                            ),
                                       ),
                               ),
                             ),
@@ -143,9 +133,7 @@ class RandomImageView extends StatelessWidget {
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 300),
                   opacity: overlayOpacity,
-                  child: Container(
-                    color: Colors.black,
-                  ),
+                  child: Container(color: Colors.black),
                 ),
               ),
             ],
@@ -220,24 +208,12 @@ class RandomImageView extends StatelessWidget {
                   clipper: const TopBumpClipper(),
                   child: AspectRatio(
                     aspectRatio: 1,
-                    child: networkImageBuilder != null
-                        ? networkImageBuilder!(
-                            context,
-                            imageUrl,
-                            foregroundColor,
-                          )
-                        : CachedNetworkImage(
-                            imageUrl: imageUrl,
-                            fit: BoxFit.cover,
-                            fadeInDuration: const Duration(milliseconds: 300),
-                            fadeOutDuration: const Duration(milliseconds: 200),
-                            placeholder: (_, __) =>
-                                _LoadingIndicator(color: foregroundColor),
-                            errorWidget: (_, __, ___) => _ErrorMessage(
-                              message: 'Could not load image.',
-                              color: foregroundColor,
-                            ),
-                          ),
+                    child: _buildImageContentWidget(
+                      context: context,
+                      imageUrl: imageUrl,
+                      accentColor: foregroundColor,
+                      builder: networkImageBuilder,
+                    ),
                   ),
                 ),
                 Positioned(
@@ -255,9 +231,9 @@ class RandomImageView extends StatelessWidget {
                       ),
                       child: IconButton(
                         iconSize: 28,
-                        onPressed: () => context
-                            .read<RandomImageBloc>()
-                            .add(const RandomImageEvent.bookmarkToggled()),
+                        onPressed: () => context.read<RandomImageBloc>().add(
+                          const RandomImageEvent.bookmarkToggled(),
+                        ),
                         icon: Icon(
                           state.isBookmarked
                               ? Icons.bookmark
@@ -310,6 +286,28 @@ class RandomImageView extends StatelessWidget {
   }
 }
 
+Widget _buildImageContentWidget({
+  required BuildContext context,
+  required String imageUrl,
+  required Color accentColor,
+  NetworkImageBuilder? builder,
+}) {
+  final customBuilder = builder;
+  if (customBuilder != null) {
+    return customBuilder(context, imageUrl, accentColor);
+  }
+
+  return CachedNetworkImage(
+    imageUrl: imageUrl,
+    fit: BoxFit.cover,
+    fadeInDuration: const Duration(milliseconds: 300),
+    fadeOutDuration: const Duration(milliseconds: 200),
+    placeholder: (_, __) => _LoadingIndicator(color: accentColor),
+    errorWidget: (_, __, ___) =>
+        _ErrorMessage(message: 'Could not load image.', color: accentColor),
+  );
+}
+
 class _CurvedAppBar extends StatelessWidget {
   const _CurvedAppBar({
     required this.backgroundColor,
@@ -359,7 +357,9 @@ class _CurvedAppBar extends StatelessWidget {
                         isDark ? Icons.dark_mode : Icons.light_mode,
                         color: foregroundColor,
                       ),
-                      tooltip: isDark ? 'Switch to light mode' : 'Switch to dark mode',
+                      tooltip: isDark
+                          ? 'Switch to light mode'
+                          : 'Switch to dark mode',
                     ),
                     const SizedBox(width: 8),
                     IconButton(

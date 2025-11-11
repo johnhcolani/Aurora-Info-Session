@@ -74,17 +74,17 @@ class BookmarkDetailRouteArgs {
 }
 
 /// generated route for
-/// [RandomImagePage]
-class RandomImageRoute extends PageRouteInfo<void> {
-  const RandomImageRoute({List<PageRouteInfo>? children})
-    : super(RandomImageRoute.name, initialChildren: children);
+/// [HomePage]
+class HomeRoute extends PageRouteInfo<void> {
+  const HomeRoute({List<PageRouteInfo>? children})
+    : super(HomeRoute.name, initialChildren: children);
 
-  static const String name = 'RandomImageRoute';
+  static const String name = 'HomeRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const RandomImagePage();
+      return const HomePage();
     },
   );
 }

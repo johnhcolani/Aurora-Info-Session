@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
-import '../bloc/random_image_bloc.dart';
-import '../widgets/random_image_view.dart';
+import '../../../random_image/presentation/bloc/random_image_bloc.dart';
+import '../../../random_image/presentation/widgets/random_image_view.dart';
 
 @RoutePage()
-class RandomImagePage extends StatelessWidget {
-  const RandomImagePage({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,4 +19,3 @@ class RandomImagePage extends StatelessWidget {
     );
   }
 }
-

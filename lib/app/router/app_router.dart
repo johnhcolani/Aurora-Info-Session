@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 
 import '../../features/bookmark/presentation/screens/bookmark_album_page.dart';
 import '../../features/bookmark/presentation/screens/bookmark_detail_page.dart';
-import '../../features/random_image/presentation/screens/random_image_page.dart';
+import '../../features/home/presentation/screens/home_page.dart';
 import '../../features/splash/presentation/screens/splash_page.dart';
 
 part 'app_router.gr.dart';
@@ -15,7 +15,7 @@ class AppRouter extends RootStackRouter {
   @override
   final List<AutoRoute> routes = [
     AutoRoute(page: SplashRoute.page, initial: true),
-    AutoRoute(page: RandomImageRoute.page),
+    AutoRoute(page: HomeRoute.page),
     AutoRoute(page: BookmarkAlbumRoute.page),
     AutoRoute(page: BookmarkDetailRoute.page),
   ];

@@ -82,24 +82,32 @@ class RandomImageView extends StatelessWidget {
                             padding: const EdgeInsets.only(bottom: 32),
                             child: SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton(
+                              child: OutlinedButton(
                                 onPressed: state.isLoading
                                     ? null
-                                    : () => context.read<RandomImageBloc>().add(
-                                        const RandomImageEvent.refreshRequested(),
-                                      ),
-                                style: ElevatedButton.styleFrom(
+                                    : () => context
+                                        .read<RandomImageBloc>()
+                                        .add(
+                                          const RandomImageEvent
+                                              .refreshRequested(),
+                                        ),
+                                style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 16,
                                   ),
-                                  backgroundColor: buttonBackgroundColor,
                                   foregroundColor: buttonForegroundColor,
-                                  disabledBackgroundColor: buttonBackgroundColor
-                                      .withValues(alpha: 0.6),
-                                  disabledForegroundColor: buttonForegroundColor
-                                      .withValues(alpha: 0.8),
+                                  side: BorderSide(color: buttonForegroundColor),
+                                  disabledForegroundColor:
+                                      buttonForegroundColor
+                                          .withValues(alpha: 0.5),
+                                  disabledBackgroundColor:
+                                      Colors.transparent,
+                                  backgroundColor: Colors.transparent,
                                   textStyle: theme.textTheme.titleMedium
                                       ?.copyWith(color: buttonForegroundColor),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
                                 ),
                                 child: state.isLoading
                                     ? SizedBox(
@@ -109,8 +117,8 @@ class RandomImageView extends StatelessWidget {
                                           strokeWidth: 1.6,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                                buttonForegroundColor,
-                                              ),
+                                            buttonForegroundColor,
+                                          ),
                                         ),
                                       )
                                     : Text(
@@ -223,7 +231,12 @@ class RandomImageView extends StatelessWidget {
                     label: state.isBookmarked
                         ? 'Remove from markbook'
                         : 'Add to markbook',
+                    hint: 'Double tap to toggle bookmark for this image',
+                    value: state.isBookmarked
+                        ? 'Currently bookmarked'
+                        : 'Not bookmarked',
                     button: true,
+                    checked: state.isBookmarked,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.35),
@@ -231,6 +244,9 @@ class RandomImageView extends StatelessWidget {
                       ),
                       child: IconButton(
                         iconSize: 28,
+                        tooltip: state.isBookmarked
+                            ? 'Remove bookmark'
+                            : 'Add bookmark',
                         onPressed: () => context.read<RandomImageBloc>().add(
                           const RandomImageEvent.bookmarkToggled(),
                         ),

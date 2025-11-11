@@ -17,10 +17,11 @@ void main() {
       final refreshButton = find.text('Another');
       expect(refreshButton, findsOneWidget);
 
-      await tester.tap(refreshButton);
-      await tester.pumpAndSettle();
-
-      expect(find.byType(CachedNetworkImage), findsOneWidget);
+      for (var i = 0; i < 4; i++) {
+        await tester.tap(refreshButton);
+        await tester.pumpAndSettle();
+        expect(find.byType(CachedNetworkImage), findsOneWidget);
+      }
     });
   });
 }

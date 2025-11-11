@@ -85,23 +85,20 @@ class RandomImageView extends StatelessWidget {
                               child: OutlinedButton(
                                 onPressed: state.isLoading
                                     ? null
-                                    : () => context
-                                        .read<RandomImageBloc>()
-                                        .add(
-                                          const RandomImageEvent
-                                              .refreshRequested(),
-                                        ),
+                                    : () => context.read<RandomImageBloc>().add(
+                                        const RandomImageEvent.refreshRequested(),
+                                      ),
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 16,
                                   ),
                                   foregroundColor: buttonForegroundColor,
-                                  side: BorderSide(color: buttonForegroundColor),
-                                  disabledForegroundColor:
-                                      buttonForegroundColor
-                                          .withValues(alpha: 0.5),
-                                  disabledBackgroundColor:
-                                      Colors.transparent,
+                                  side: BorderSide(
+                                    color: buttonForegroundColor,
+                                  ),
+                                  disabledForegroundColor: buttonForegroundColor
+                                      .withValues(alpha: 0.5),
+                                  disabledBackgroundColor: Colors.transparent,
                                   backgroundColor: Colors.transparent,
                                   textStyle: theme.textTheme.titleMedium
                                       ?.copyWith(color: buttonForegroundColor),
@@ -117,8 +114,8 @@ class RandomImageView extends StatelessWidget {
                                           strokeWidth: 1.6,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                            buttonForegroundColor,
-                                          ),
+                                                buttonForegroundColor,
+                                              ),
                                         ),
                                       )
                                     : Text(

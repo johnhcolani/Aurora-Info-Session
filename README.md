@@ -1,17 +1,98 @@
-# aurora_info_session
+# Aurora Gallery
 
-A new Flutter project.
+A Flutter showcase app that fetches a random image, builds an adaptive palette around it, and lets users bookmark their favourites for offline viewing.
 
-## Getting Started
+## Preview
 
-This project is a starting point for a Flutter application.
+| Home (dark context) | Home (light context) | Empty bookmarks | Saved bookmarks |
+| --- | --- | --- | --- |
+| ![Home dark](docs/images/home-dark.png) | ![Home light](docs/images/home-light.png) | ![Empty bookmarks](docs/images/bookmarks-empty.png) | ![Saved bookmarks](docs/images/bookmarks-saved.png) |
 
-A few resources to get you started if this is your first Flutter project:
+> ℹ️ Put the exported screenshots into the paths listed above so they can render in this table.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Highlights
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# Aurora-Info-Session
+- **Dynamic theming** – every refresh downloads a new photo and uses `palette_generator` to extract the dominant colour. That colour drives:
+  - the gradient on the `Scaffold`
+  - foreground contrast for labels, indicators, and the refresh button
+  - the button background/outline so it remains legible on both light and dark palettes
+- **Clean architecture + BLoC** – data, domain, and presentation layers stay isolated, allowing deterministic BLoC tests and dehydration/rehydration of state.
+- **Bookmarks on device** – `sqflite` stores bookmarked images locally. Users can toggle the bookmark chip in the hero view and revisit their saved collection even offline.
+- **Custom visuals** – hero image and app bar share complementary “wave” clippers, plus a glowing status halo and arc text for the image name.
+- **Animations everywhere** – `AnimatedSwitcher` for the hero content, button loading indicator, and a bouncing splash logo backed by `TweenSequence`.
+
+## Architecture
+
+```
+lib/
+├── app/                # global router, theme, bootstrap
+├── core/               # constants, data state, DI (GetIt)
+├── features/
+│   ├── home/           # presentation layer for the gallery screen
+│   ├── random_image/   # data + domain + presentation for image fetching
+│   ├── bookmark/       # sqflite data source, repository, Cubit UI
+│   └── splash/         # timed splash BLoC + animated view
+└── integration_test/   # end-to-end flow assertions
+```
+
+- **Freezed** generates immutable models/state (`RandomImageState`, `RandomImageModel`, `BookmarkEntity` DTOs) with exhaustive unions.
+- **AutoRoute** declares navigation maps in `app_router.dart`; generated code provides `HomeRoute`, `BookmarkAlbumRoute`, etc., so navigation stays type-safe.
+- **GetIt** wires dependencies (`Dio`, repositories, use cases, cubits/BLoCs) and keeps widget code clean.
+
+## Data flow
+
+1. `RandomImageBloc` reacts to `RandomImageEvent.refreshRequested`.
+2. `GetRandomImageUseCase` calls `RandomImageRepository`, which requests JSON from the Cloud Run endpoint through `Dio`.
+3. The dominant colour from the returned image is extracted and forwarded in the state to drive theming.
+4. Bookmark toggles call into `AddBookmarkUseCase` / `RemoveBookmarkUseCase` and update the local cache through `BookmarkRepository` → `BookmarkLocalDataSource` (`sqflite`).
+5. `BookmarkAlbumCubit` loads those entities when the bookmarks page comes into view.
+
+## Running the app
+
+```bash
+flutter pub get
+flutter run -d <device-id>
+```
+
+## Automated tests
+
+| Suite | Description | Command |
+| --- | --- | --- |
+| **BLoC tests** | Validates `RandomImageBloc` transitions (loading → success/failure) using `bloc_test` and `mocktail`. | `flutter test test/features/random_image/presentation/bloc` |
+| **Widget tests** | Exercises the gallery view widgets (loading states, error messages, button semantics). | `flutter test test/features/random_image/presentation/widgets/random_image_view_test.dart` |
+| **Golden tests** | Pixel-diff checks for the gallery and bookmarks layouts. | `flutter test --update-goldens test/features/random_image/presentation/widgets/random_image_view_golden_test.dart`  
+`flutter test --update-goldens test/features/bookmark/presentation/widgets/bookmark_album_view_golden_test.dart` |
+| **Integration test** | Drives the full “fetch + tap refresh (×4) + bookmark” flow with `integration_test`. | `flutter test integration_test/random_image_flow_test.dart` |
+
+### Integration test video
+
+An end-to-end capture of the integration run lives in `docs/videos/integration_demo.mp4`. Embed it wherever you publish release notes or drop it into presentations to show the adaptive theming in motion.
+
+## Navigation & routing
+
+Routes live in `app_router.dart` and are generated by `auto_route`:
+
+- `SplashRoute` → animated entry point
+- `HomeRoute` → adaptive gallery view
+- `BookmarkAlbumRoute` and `BookmarkDetailRoute`
+
+Navigation calls remain terse (`context.router.push(const BookmarkAlbumRoute())`) while retaining compile-time safety.
+
+## Development tips
+
+- Regenerate Freezed & AutoRoute code after model or route changes:
+  ```bash
+  flutter pub run build_runner build --delete-conflicting-outputs
+  ```
+- Update goldens whenever you refresh UI styling:
+  ```bash
+  flutter test --update-goldens test/features/random_image/presentation/widgets/random_image_view_golden_test.dart
+  flutter test --update-goldens test/features/bookmark/presentation/widgets/bookmark_album_view_golden_test.dart
+  ```
+- Integration test videos pair nicely with the CI artifact produced by `integration_test/random_image_flow_test.dart`.
+
+## Credits
+
+- UI concept & screenshots by the Aurora product team.
+- Dominant colour extraction powered by the Flutter `palette_generator` package.
+- App icon & splash logo sourced from the project assets folder.

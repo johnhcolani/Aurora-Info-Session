@@ -1,0 +1,89 @@
+Aurora Gallery – Slide Deck Narrative
+====================================
+
+Slide 1 — Title
+- Highlight the app name, tech stack (Flutter, Clean Architecture, BLoC, Auto Route).
+- Show full-screen screenshot of the RandomImageView.
+- Introduce scope: interview sample project delivering adaptive gallery experience.
+
+Slide 2 — Challenge
+- Outline the brief: fetch random image, center it, adaptive background, refresh button.
+
+- Emphasize smooth transitions, accessibility, resilient loading/error handling.
+
+- Use annotated screenshot of the main screen.
+
+Slide 3 — Architectural Blueprint
+- Explain Clean Architecture layers (data, domain, presentation).
+- Mention `RandomImageBloc` and location: `lib/features/random_image/presentation/bloc`.
+- Call out navigation via `auto_route` (`app/router/app_router.dart`).
+- Note code generation with `freezed` and `build_runner`.
+- Include directory structure visual.
+
+Slide 4 — Data Flow
+- Walk through button press → Bloc event → use case → repository → remote data source → API → UI.
+- Discuss `DataState` (`DataSuccess`/`DataFailed`) for success/failure handling.
+- Mention dominant color extraction executed in isolate.
+- Show flow diagram with arrows and file references.
+
+Slide 5 — Presentation Layer Details
+- Describe `RandomImageView`, `AnimatedContainer`, `AnimatedSwitcher`.
+- Call out custom clippers (`AppBarBumpClipper`, `TopBumpClipper`).
+- Highlight glowing ellipse overlay positioned in Stack.
+- Provide screenshot with call-outs.
+
+Slide 6 — Palette & Glow Feature
+- Detail dominant color extraction (`_getDominantColorFromUrl` via `compute`).
+- Explain `_glowColor`, `EllipseData`, and `SingleGlowEllipsePainter`.
+- Mention light/dark adjustments via `ThemeCubit`.
+- Use zoomed screenshot focusing on the glowing ellipse.
+
+Slide 7 — Error & Loading States
+- Loading indicator: `_LoadingIndicator` with `SpinKitSpinningLines`.
+- Error fallback: `_ErrorMessage` with friendly messaging.
+- Accessibility: semantics on buttons, disabled states during loading.
+- Provide two screenshots (loading, error).
+
+Slide 8 — Tooling & Packages
+- List key dependencies from `pubspec.yaml` (`flutter_bloc`, `auto_route`, `dio`, etc.).
+- Mention command: `flutter pub run build_runner build --delete-conflicting-outputs`.
+- Show snippet of `pubspec.yaml` and terminal output.
+
+Slide 9 — Demo Narrative
+- Demo script: initial load, background animation, glowing badge, pressing “Another”, theme toggle.
+- Optionally showcase error state by simulating network loss.
+- Embed short screen recording or sequential screenshots.
+
+Slide 10 — Results & Next Steps
+- Summarize delivered value: maintainable architecture, polished UX, responsive performance.
+- Outline future enhancements: offline caching, bookmark album, analytics.
+- Use checklist or roadmap visual.
+
+Slide 11 — Q&A / Contact
+- Recap strengths, invite questions.
+- Share contact information (email, LinkedIn).
+- Finish with app hero image or company logo.
+
+Screenshot & Snippet Checklist
+- High-res main screen (light and dark mode).
+- Animated background capture or GIF.
+- Glowing ellipse close-up.
+- Loading and error state captures.
+- Code excerpts: `RandomImageBloc._fetchImage`, `_GlowingEllipse`, route setup.
+
+Command Recap
+- `flutter pub get`
+- `flutter pub run build_runner build --delete-conflicting-outputs`
+- `flutter run` (on Medium emulator)
+- Golden tests: `flutter test --tags=golden`
+- Widget tests: `flutter test test/widgets/`
+- BLoC tests: `flutter test test/bloc/`
+- Integration tests: `flutter test integration_test/`
+
+Integration Test Scenario (Bookmark)
+- Launch the app and wait for initial random image load.
+- Tap the bookmark icon to navigate to the bookmark album screen.
+- On the album list, tap a bookmarked image to open its detail view.
+- Verify detail content, then use back navigation to return to the bookmark page.
+- Confirm the bookmark list is still visible and conclude the test.
+

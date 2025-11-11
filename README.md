@@ -4,24 +4,36 @@ A Flutter showcase app that fetches a random image, builds an adaptive palette a
 
 ## Preview
 
-<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 17 28" src="https://github.com/user-attachments/assets/c748f7b6-435b-471b-afec-2d08c6fa7032" />
-
-<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 17 41" src="https://github.com/user-attachments/assets/fa3a8b42-f774-49c3-b043-f8bfecd20c67" />
-<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 17 56" src="https://github.com/user-attachments/assets/1d6088b9-55fd-4bff-860a-ac53f7aee551" />
-<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 18 29" src="https://github.com/user-attachments/assets/4741d5f7-e563-4c96-923d-3dec92121b86" />
-<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 18 53" src="https://github.com/user-attachments/assets/174c08e4-ddbd-4208-a118-e641f8052e5b" />
-<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 19 03" src="https://github.com/user-attachments/assets/4d63fca9-2cf8-48a0-b862-a95ba385848e" />
-
-
-
-
-
-
-| Home (dark context) | Home (light context) | Empty bookmarks | Saved bookmarks |
-| --- | --- | --- | --- |
-| ![Home dark](docs/images/home-dark.png) | ![Home light](docs/images/home-light.png) | ![Empty bookmarks](docs/images/bookmarks-empty.png) | ![Saved bookmarks](docs/images/bookmarks-saved.png) |
-
-> ℹ️ Put the exported screenshots into the paths listed above so they can render in this table.
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/c748f7b6-435b-471b-afec-2d08c6fa7032" width="260" alt="Home screen with dark palette" />
+      <br /><sub>Adaptive palette from a dark photo</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/fa3a8b42-f774-49c3-b043-f8bfecd20c67" width="260" alt="Home screen with warm palette" />
+      <br /><sub>Orange glow reacts to photo tones</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/1d6088b9-55fd-4bff-860a-ac53f7aee551" width="260" alt="Empty bookmarks screen" />
+      <br /><sub>Empty state nudges users to save images</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/4741d5f7-e563-4c96-923d-3dec92121b86" width="260" alt="Light themed gallery" />
+      <br /><sub>Contrast adjusts automatically for bright photos</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/174c08e4-ddbd-4208-a118-e641f8052e5b" width="260" alt="Bookmark chip highlighted" />
+      <br /><sub>Bookmark indicator doubles as a glowing status</sub>
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/4d63fca9-2cf8-48a0-b862-a95ba385848e" width="260" alt="Bookmarks grid with saved items" />
+      <br /><sub>Saved items appear in a grid sourced from SQLite</sub>
+    </td>
+  </tr>
+</table>
 
 ## Highlights
 
@@ -73,8 +85,7 @@ flutter run -d <device-id>
 | --- | --- | --- |
 | **BLoC tests** | Validates `RandomImageBloc` transitions (loading → success/failure) using `bloc_test` and `mocktail`. | `flutter test test/features/random_image/presentation/bloc` |
 | **Widget tests** | Exercises the gallery view widgets (loading states, error messages, button semantics). | `flutter test test/features/random_image/presentation/widgets/random_image_view_test.dart` |
-| **Golden tests** | Pixel-diff checks for the gallery and bookmarks layouts. | `flutter test --update-goldens test/features/random_image/presentation/widgets/random_image_view_golden_test.dart`  
-`flutter test --update-goldens test/features/bookmark/presentation/widgets/bookmark_album_view_golden_test.dart` |
+| **Golden tests** | Pixel-diff checks for the gallery and bookmarks layouts. | `flutter test --update-goldens test/features/random_image/presentation/widgets/random_image_view_golden_test.dart`<br>`flutter test --update-goldens test/features/bookmark/presentation/widgets/bookmark_album_view_golden_test.dart` |
 | **Integration test** | Drives the full “fetch + tap refresh (×4) + bookmark” flow with `integration_test`. | `flutter test integration_test/random_image_flow_test.dart` |
 
 ### Integration test video

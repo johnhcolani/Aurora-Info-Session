@@ -4,6 +4,19 @@ A Flutter showcase app that fetches a random image, builds an adaptive palette a
 
 ## Preview
 
+<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 17 28" src="https://github.com/user-attachments/assets/c748f7b6-435b-471b-afec-2d08c6fa7032" />
+
+<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 17 41" src="https://github.com/user-attachments/assets/fa3a8b42-f774-49c3-b043-f8bfecd20c67" />
+<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 17 56" src="https://github.com/user-attachments/assets/1d6088b9-55fd-4bff-860a-ac53f7aee551" />
+<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 18 29" src="https://github.com/user-attachments/assets/4741d5f7-e563-4c96-923d-3dec92121b86" />
+<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 18 53" src="https://github.com/user-attachments/assets/174c08e4-ddbd-4208-a118-e641f8052e5b" />
+<img width="1320" height="2868" alt="Simulator Screenshot - iPhone 16 Pro Max - 2025-11-11 at 18 19 03" src="https://github.com/user-attachments/assets/4d63fca9-2cf8-48a0-b862-a95ba385848e" />
+
+
+
+
+
+
 | Home (dark context) | Home (light context) | Empty bookmarks | Saved bookmarks |
 | --- | --- | --- | --- |
 | ![Home dark](docs/images/home-dark.png) | ![Home light](docs/images/home-light.png) | ![Empty bookmarks](docs/images/bookmarks-empty.png) | ![Saved bookmarks](docs/images/bookmarks-saved.png) |

@@ -19,8 +19,10 @@ part 'random_image_bloc.freezed.dart';
 part 'random_image_event.dart';
 part 'random_image_state.dart';
 
+/// Function type for loading dominant color from an image URL.
 typedef DominantColorLoader = Future<Color?> Function(String imageUrl);
 
+/// BLoC managing random image state, including fetching images, extracting dominant colors in isolates, and bookmark management.
 class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
   RandomImageBloc(
     this._getRandomImageUseCase, {
@@ -45,6 +47,7 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
   final IsBookmarkedUseCase _isBookmarkedUseCase;
   final DominantColorLoader _loadDominantColor;
 
+  /// Handles the initial load event, fetching a random image.
   Future<void> _onStarted(
       _Started event,
       Emitter<RandomImageState> emit,
@@ -52,6 +55,7 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
     await _fetchImage(emit);
   }
 
+  /// Handles refresh requests, fetching a new random image.
   Future<void> _onRefreshRequested(
       _RefreshRequested event,
       Emitter<RandomImageState> emit,
@@ -59,6 +63,7 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
     await _fetchImage(emit);
   }
 
+  /// Fetches a random image, extracts its dominant color in an isolate, and checks bookmark status.
   Future<void> _fetchImage(Emitter<RandomImageState> emit) async {
     emit(
       state.copyWith(
@@ -110,6 +115,7 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
     }
   }
 
+  /// Toggles bookmark status for the current image (adds if not bookmarked, removes if bookmarked).
   Future<void> _onBookmarkToggled(
     _BookmarkToggled event,
     Emitter<RandomImageState> emit,
@@ -143,11 +149,13 @@ class RandomImageBloc extends Bloc<RandomImageEvent, RandomImageState> {
   }
 }
 
+/// Default dominant color loader that runs color extraction in an isolate to avoid blocking the main thread.
 Future<Color?> _defaultDominantColorLoader(String imageUrl) {
   return compute<String, Color?>(_getDominantColorFromUrl, imageUrl);
 }
 
-// 🧠 This function runs inside the Isolate
+/// Extracts the dominant color from an image URL by downloading, resizing, and averaging pixel colors.
+/// This function runs inside an isolate to avoid blocking the main thread.
 Future<Color?> _getDominantColorFromUrl(String imageUrl) async {
   final uri = Uri.tryParse(imageUrl);
   if (uri == null) {

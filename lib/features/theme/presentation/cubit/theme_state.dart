@@ -1,5 +1,6 @@
 part of 'theme_cubit.dart';
 
+/// State class holding the current theme mode (light, dark, or system).
 class ThemeState extends Equatable {
   const ThemeState({this.themeMode = ThemeMode.system});
 

@@ -1,6 +1,7 @@
 import '../../../../core/usecase/use_case.dart';
 import '../repositories/bookmark_repository.dart';
 
+/// Use case for checking if a URL is already bookmarked.
 class IsBookmarkedUseCase implements UseCase<bool, String> {
   IsBookmarkedUseCase(this._repository);
 

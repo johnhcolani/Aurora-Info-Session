@@ -3,10 +3,12 @@ import 'package:flutter/foundation.dart';
 
 import '../../../../core/constants/constants.dart';
 
+/// Abstract interface for fetching random images from a remote API.
 abstract class RandomImageRemoteDataSource {
   Future<RemoteImagePayload> getRandomImage();
 }
 
+/// Implementation that fetches random images using Dio client, running the network call in an isolate via compute.
 class RandomImageRemoteDataSourceImpl implements RandomImageRemoteDataSource {
   RandomImageRemoteDataSourceImpl(this._client);
 
@@ -31,6 +33,7 @@ class RandomImageRemoteDataSourceImpl implements RandomImageRemoteDataSource {
   }
 }
 
+/// Data class representing the response payload from the random image API.
 class RemoteImagePayload {
   const RemoteImagePayload({
     required this.data,
@@ -54,6 +57,8 @@ class RemoteImagePayload {
   }
 }
 
+/// Fetches random image data in an isolate to avoid blocking the main thread.
+/// This function is designed to be used with Flutter's compute() for background execution.
 Future<Map<String, dynamic>> _fetchRandomImage(
   Map<String, dynamic> config,
 ) async {

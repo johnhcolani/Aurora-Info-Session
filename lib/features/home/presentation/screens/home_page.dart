@@ -6,6 +6,7 @@ import '../../../../core/di/service_locator.dart';
 import '../../../random_image/presentation/bloc/random_image_bloc.dart';
 import '../../../random_image/presentation/widgets/random_image_view.dart';
 
+/// Main home page that provides the random image bloc and displays the random image view.
 @RoutePage()
 class HomePage extends StatelessWidget {
   const HomePage({super.key});

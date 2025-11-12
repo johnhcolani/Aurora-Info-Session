@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/service_locator.dart';
 import '../../presentation/bloc/splash_bloc.dart';
 
+/// Initial splash screen page displayed when the app starts, with animated logo and navigation to home.
 @RoutePage()
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -20,6 +21,7 @@ class SplashPage extends StatelessWidget {
   }
 }
 
+/// View widget displaying the animated splash screen with logo drop animation.
 class _SplashView extends StatefulWidget {
   const _SplashView();
 
@@ -27,6 +29,7 @@ class _SplashView extends StatefulWidget {
   State<_SplashView> createState() => _SplashViewState();
 }
 
+/// State managing the splash screen animation and navigation to home when animation completes.
 class _SplashViewState extends State<_SplashView>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;

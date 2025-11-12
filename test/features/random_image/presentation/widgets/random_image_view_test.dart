@@ -8,10 +8,12 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+/// Mock bloc for testing random image view functionality.
 class _MockRandomImageBloc
     extends MockBloc<RandomImageEvent, RandomImageState>
     implements RandomImageBloc {}
 
+/// Widget tests for RandomImageView, verifying UI behavior in different states.
 void main() {
   late _MockRandomImageBloc bloc;
   late ThemeCubit themeCubit;
@@ -26,6 +28,7 @@ void main() {
     themeCubit.close();
   });
 
+  /// Tests that the loading indicator is displayed when the bloc is in loading state.
   testWidgets(
     'shows loading indicator while waiting for image',
     (tester) async {
@@ -56,6 +59,7 @@ void main() {
     },
   );
 
+  /// Tests that the Aurora logo is displayed in the app bar when the bloc is in failure state.
   testWidgets(
     'renders Aurora logo in the app bar when state is failure',
     (tester) async {

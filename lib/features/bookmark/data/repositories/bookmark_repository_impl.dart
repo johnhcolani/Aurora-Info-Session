@@ -2,6 +2,7 @@ import '../../domain/entities/bookmark_entity.dart';
 import '../../domain/repositories/bookmark_repository.dart';
 import '../datasources/local/bookmark_local_data_source.dart';
 
+/// Concrete repository that delegates to the local data source.
 class BookmarkRepositoryImpl implements BookmarkRepository {
   BookmarkRepositoryImpl(this._localDataSource);
 

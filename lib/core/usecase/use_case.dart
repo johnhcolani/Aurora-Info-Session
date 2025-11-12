@@ -1,6 +1,8 @@
 
-abstract class UseCase<T, P>{
+/// Contract for use cases following the clean architecture pattern.
+abstract class UseCase<T, P> {
   Future<T> call(P param);
 }
 
-class NoParams{}
+/// Convenience type when a use case does not require parameters.
+class NoParams {}

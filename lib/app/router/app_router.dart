@@ -13,6 +13,7 @@ class AppRouter extends RootStackRouter {
   AppRouter({super.navigatorKey});
 
   @override
+  /// Central list of routes used by the `auto_route` generator.
   final List<AutoRoute> routes = [
     AutoRoute(page: SplashRoute.page, initial: true),
     AutoRoute(page: HomeRoute.page),

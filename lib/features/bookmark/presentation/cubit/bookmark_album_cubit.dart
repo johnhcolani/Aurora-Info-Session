@@ -4,6 +4,7 @@ import '../../../../core/usecase/use_case.dart';
 import '../../domain/entities/bookmark_entity.dart';
 import '../../domain/usecases/get_bookmarks_usecase.dart';
 
+/// State class for the bookmark album screen, holding loading state, bookmarks list, and error messages.
 class BookmarkAlbumState {
   const BookmarkAlbumState({
     this.isLoading = true,
@@ -28,12 +29,14 @@ class BookmarkAlbumState {
   }
 }
 
+/// Cubit managing the bookmark album screen state and loading bookmarks.
 class BookmarkAlbumCubit extends Cubit<BookmarkAlbumState> {
   BookmarkAlbumCubit(this._getBookmarksUseCase)
       : super(const BookmarkAlbumState());
 
   final GetBookmarksUseCase _getBookmarksUseCase;
 
+  /// Loads all bookmarks from the repository and updates the state accordingly.
   Future<void> loadBookmarks() async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
     try {

@@ -7,6 +7,7 @@ part 'splash_bloc.freezed.dart';
 part 'splash_event.dart';
 part 'splash_state.dart';
 
+/// BLoC managing splash screen state, delaying for a specified duration before marking completion.
 class SplashBloc extends Bloc<SplashEvent, SplashState> {
   SplashBloc({Duration? delay})
       : _delay = delay ?? const Duration(seconds: 2),
@@ -16,6 +17,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
 
   final Duration _delay;
 
+  /// Handles the splash started event, waits for the delay duration, then marks splash as completed.
   Future<void> _onStarted(
     _SplashStarted event,
     Emitter<SplashState> emit,

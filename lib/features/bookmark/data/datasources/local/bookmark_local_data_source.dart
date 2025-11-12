@@ -5,6 +5,7 @@ import 'package:sqflite/sqflite.dart';
 
 import '../../models/bookmark_model.dart';
 
+/// Manages bookmark persistence using a local SQLite database.
 class BookmarkLocalDataSource {
   BookmarkLocalDataSource();
 
@@ -23,6 +24,7 @@ class BookmarkLocalDataSource {
     return _database!;
   }
 
+  /// Lazily create/open the SQLite database and ensure schema exists.
   Future<Database> _initDatabase() async {
     final docsDir = await getApplicationDocumentsDirectory();
     final dbPath = p.join(docsDir.path, _databaseName);
@@ -42,6 +44,7 @@ class BookmarkLocalDataSource {
     );
   }
 
+  /// Fetch all bookmarks sorted by newest first.
   Future<List<BookmarkModel>> getBookmarks() async {
     final db = await database;
     final result = await db.query(
@@ -52,6 +55,7 @@ class BookmarkLocalDataSource {
     return result.map((row) => BookmarkModel.fromMap(row)).toList();
   }
 
+  /// Insert a bookmark if it does not already exist.
   Future<void> insertBookmark(String url) async {
     final db = await database;
     await db.insert(
@@ -64,6 +68,7 @@ class BookmarkLocalDataSource {
     );
   }
 
+  /// Permanently remove a stored bookmark by URL.
   Future<void> deleteBookmark(String url) async {
     final db = await database;
     await db.delete(
@@ -73,6 +78,7 @@ class BookmarkLocalDataSource {
     );
   }
 
+  /// Check whether the given URL is currently stored.
   Future<bool> isBookmarked(String url) async {
     final db = await database;
     final result = await db.query(

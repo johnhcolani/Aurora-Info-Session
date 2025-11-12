@@ -7,8 +7,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:mocktail/mocktail.dart';
 
+/// Mock cubit for testing bookmark album functionality.
 class _MockBookmarkAlbumCubit extends Mock implements BookmarkAlbumCubit {}
 
+/// Golden tests for the bookmark album view, verifying visual appearance matches expected screenshots.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -36,6 +38,7 @@ void main() {
       await cubit.close();
     });
 
+    /// Tests that the bookmark album displays correctly when it contains bookmarked images.
     testGoldens('renders bookmark album with content', (tester) async {
       final state = BookmarkAlbumState(
         isLoading: false,
@@ -66,6 +69,7 @@ void main() {
       );
     });
 
+    /// Tests that the bookmark album displays the empty state correctly when no bookmarks exist.
     testGoldens('renders empty bookmark album', (tester) async {
       const state = BookmarkAlbumState(isLoading: false);
       when(() => cubit.state).thenReturn(state);

@@ -18,8 +18,10 @@ import '../../features/theme/presentation/cubit/theme_cubit.dart';
 import '../../features/splash/presentation/bloc/splash_bloc.dart';
 import '../network/dio_client.dart';
 
+/// Global GetIt container shared throughout the app.
 final GetIt serviceLocator = GetIt.instance;
 
+/// Wire up all lazily created services, repositories, and blocs.
 Future<void> setupDependencies() async {
   serviceLocator
     ..registerLazySingleton(DioClient.new)

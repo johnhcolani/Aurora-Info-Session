@@ -12,18 +12,24 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+/// Mock use case for testing random image fetching.
 class _MockGetRandomImageUseCase extends Mock
     implements GetRandomImageUseCase {}
 
+/// Mock use case for testing bookmark addition.
 class _MockAddBookmarkUseCase extends Mock implements AddBookmarkUseCase {}
 
+/// Mock use case for testing bookmark removal.
 class _MockRemoveBookmarkUseCase extends Mock
     implements RemoveBookmarkUseCase {}
 
+/// Mock use case for testing bookmark status checks.
 class _MockIsBookmarkedUseCase extends Mock implements IsBookmarkedUseCase {}
 
+/// Fake NoParams for use case fallback values.
 class _FakeNoParams extends Fake implements NoParams {}
 
+/// Unit tests for RandomImageBloc, verifying state transitions and bookmark functionality.
 void main() {
   setUpAll(() {
     registerFallbackValue(_FakeNoParams());
@@ -47,6 +53,7 @@ void main() {
       isBookmarkedUseCase = _MockIsBookmarkedUseCase();
     });
 
+    /// Tests successful image fetching flow: loading state followed by success state with image and dominant color.
     blocTest<RandomImageBloc, RandomImageState>(
       'emits loading then success when image is fetched',
       build: () {
@@ -78,6 +85,7 @@ void main() {
       },
     );
 
+    /// Tests error handling flow: loading state followed by failure state when image fetch fails.
     blocTest<RandomImageBloc, RandomImageState>(
       'emits loading then failure when repository returns error',
       build: () {
@@ -107,6 +115,7 @@ void main() {
       },
     );
 
+    /// Tests bookmark toggle functionality: adding a bookmark updates the state to reflect bookmarked status.
     blocTest<RandomImageBloc, RandomImageState>(
       'toggles bookmark when bookmark button pressed',
       build: () {

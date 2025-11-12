@@ -8,6 +8,7 @@ import '../../../../core/di/service_locator.dart';
 import '../../domain/entities/bookmark_entity.dart';
 import '../cubit/bookmark_album_cubit.dart';
 
+/// Page displaying all bookmarked images in a grid layout.
 @RoutePage()
 class BookmarkAlbumPage extends StatelessWidget {
   const BookmarkAlbumPage({super.key});
@@ -21,6 +22,7 @@ class BookmarkAlbumPage extends StatelessWidget {
   }
 }
 
+/// Main view widget that displays loading, error, empty, or bookmark grid states.
 class _BookmarkAlbumView extends StatelessWidget {
   const _BookmarkAlbumView();
 
@@ -104,6 +106,7 @@ class _BookmarkAlbumView extends StatelessWidget {
   }
 }
 
+/// Individual bookmark tile widget displaying the image with URL overlay, navigates to detail on tap.
 class _BookmarkTile extends StatelessWidget {
   const _BookmarkTile({required this.bookmark});
 
@@ -177,6 +180,7 @@ class _BookmarkTile extends StatelessWidget {
   }
 }
 
+/// Empty state widget shown when there are no bookmarks.
 class _EmptyBookmarks extends StatelessWidget {
   const _EmptyBookmarks();
 
@@ -221,6 +225,7 @@ class _EmptyBookmarks extends StatelessWidget {
   }
 }
 
+/// Error indicator widget shown when an image fails to load.
 class _ImageErrorIndicator extends StatelessWidget {
   const _ImageErrorIndicator();
 

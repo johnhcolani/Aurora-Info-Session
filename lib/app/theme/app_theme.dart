@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
+  /// Light theme based on Material 3 with custom surfaces and buttons.
   static ThemeData lightTheme() {
     final base = ThemeData(
       brightness: Brightness.light,
@@ -25,6 +26,7 @@ class AppTheme {
     );
   }
 
+  /// Dark theme counterpart keeping surfaces legible on dark backgrounds.
   static ThemeData darkTheme() {
     final base = ThemeData(
       brightness: Brightness.dark,

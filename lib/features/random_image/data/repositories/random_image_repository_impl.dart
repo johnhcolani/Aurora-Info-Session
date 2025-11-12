@@ -4,6 +4,7 @@ import '../../domain/repositories/random_image_repository.dart';
 import '../datasources/random_image_remote_data_source.dart';
 import '../models/random_image_model.dart';
 
+/// Repository implementation that fetches random images from remote data source and converts to domain entities.
 class RandomImageRepositoryImpl implements RandomImageRepository {
   RandomImageRepositoryImpl(this._remoteDataSource);
 

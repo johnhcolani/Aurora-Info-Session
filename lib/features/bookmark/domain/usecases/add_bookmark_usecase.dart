@@ -1,6 +1,7 @@
 import '../../../../core/usecase/use_case.dart';
 import '../repositories/bookmark_repository.dart';
 
+/// Adds a bookmark for the provided URL.
 class AddBookmarkUseCase implements UseCase<void, String> {
   AddBookmarkUseCase(this._repository);
 

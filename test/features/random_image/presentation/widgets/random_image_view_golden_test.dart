@@ -9,10 +9,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:mocktail/mocktail.dart';
 
+/// Mock bloc for testing random image view functionality.
 class _MockRandomImageBloc
     extends MockBloc<RandomImageEvent, RandomImageState>
     implements RandomImageBloc {}
 
+/// Golden tests for the random image view, verifying visual appearance matches expected screenshots.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -31,6 +33,7 @@ void main() {
       bloc.close();
     });
 
+    /// Tests that the random image view displays correctly in success state with image, background color, and UI elements.
     testGoldens('renders success state layout with image', (tester) async {
       const successState = RandomImageState(
         status: RandomImageStatus.success,

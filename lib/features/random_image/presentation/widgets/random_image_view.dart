@@ -10,9 +10,11 @@ import '../../../../app/router/app_router.dart';
 import '../bloc/random_image_bloc.dart';
 import '../../../theme/presentation/cubit/theme_cubit.dart';
 
+/// Builder function type for customizing how network images are displayed.
 typedef NetworkImageBuilder =
     Widget Function(BuildContext context, String imageUrl, Color accentColor);
 
+/// Main widget displaying random images with dynamic background colors, bookmark functionality, and animated transitions.
 class RandomImageView extends StatelessWidget {
   const RandomImageView({super.key, this.networkImageBuilder});
 
@@ -149,10 +151,12 @@ class RandomImageView extends StatelessWidget {
     );
   }
 
+  /// Navigates to the bookmark album page.
   void _openAlbum(BuildContext context) {
     context.pushRoute(const BookmarkAlbumRoute());
   }
 
+  /// Builds the main content widget based on the current state (loading, error, or success).
   Widget _buildContent(
     BuildContext context,
     RandomImageState state,
@@ -340,6 +344,7 @@ class RandomImageView extends StatelessWidget {
   }
 }
 
+/// Data class holding properties for rendering glowing ellipses above images.
 class EllipseData {
   const EllipseData({
     required this.color,
@@ -354,6 +359,7 @@ class EllipseData {
   final String character;
 }
 
+/// Widget displaying a glowing ellipse decoration above the image.
 class _GlowingEllipse extends StatelessWidget {
   const _GlowingEllipse({required this.data, this.size = const Size(200, 140)});
 
@@ -377,6 +383,7 @@ class _GlowingEllipse extends StatelessWidget {
   }
 }
 
+/// Custom painter for rendering glowing ellipse shapes.
 class SingleGlowEllipsePainter extends CustomPainter {
   const SingleGlowEllipsePainter({required this.data});
 
@@ -456,6 +463,7 @@ Widget _buildImageContentWidget({
   );
 }
 
+/// Custom app bar with curved bottom edge displaying the app title and bookmark album button.
 class _CurvedAppBar extends StatelessWidget {
   const _CurvedAppBar({
     required this.backgroundColor,
@@ -554,6 +562,7 @@ class _CurvedAppBar extends StatelessWidget {
   }
 }
 
+/// Loading indicator widget displaying an animated spinner.
 class _LoadingIndicator extends StatelessWidget {
   const _LoadingIndicator({required this.color});
 
@@ -583,6 +592,7 @@ class _LoadingIndicator extends StatelessWidget {
   }
 }
 
+/// Error message widget displaying an error icon and message text.
 class _ErrorMessage extends StatelessWidget {
   const _ErrorMessage({required this.message, required this.color});
 
@@ -612,6 +622,7 @@ class _ErrorMessage extends StatelessWidget {
   }
 }
 
+/// Custom clipper creating a curved bump at the top of the image container.
 class TopBumpClipper extends CustomClipper<Path> {
   const TopBumpClipper({this.cornerRadius = 24, this.bumpHeightFactor = 0.4});
 
@@ -649,6 +660,7 @@ class TopBumpClipper extends CustomClipper<Path> {
   }
 }
 
+/// Custom clipper creating a curved bottom edge for the app bar.
 class AppBarBumpClipper extends CustomClipper<Path> {
   const AppBarBumpClipper({
     this.depthFactor = 0.25,
@@ -684,6 +696,7 @@ class AppBarBumpClipper extends CustomClipper<Path> {
       oldClipper.cornerLiftFactor != cornerLiftFactor;
 }
 
+/// Widget displaying text along a curved arc path.
 class ArcText extends StatelessWidget {
   const ArcText({
     super.key,
@@ -725,6 +738,7 @@ class ArcText extends StatelessWidget {
   }
 }
 
+/// Custom painter for rendering text along an arc path.
 class _ArcTextPainter extends CustomPainter {
   _ArcTextPainter({
     required this.text,

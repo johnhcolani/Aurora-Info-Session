@@ -46,6 +46,56 @@ A Flutter showcase app that fetches a random image, builds an adaptive palette a
   - foreground contrast for labels, indicators, and the refresh button
   - the button background/outline so it remains legible on both light and dark palettes
 - **Clean architecture + BLoC** – data, domain, and presentation layers stay isolated, allowing deterministic BLoC tests and dehydration/rehydration of state.
+lib/
+├── core/
+│   ├── constants/
+│   ├── di/                 # service_locator.dart
+│   ├── network/            # Dio client
+│   └── resources/          # DataState, etc.
+├── app/
+│   ├── router/             # auto_route config + generated files
+│   └── theme/              # theme cubit + styles
+├── features/
+│   ├── home/               # presentation (HomePage scaffold, providers)
+│   ├── random_image/
+│   │   ├── data/
+│   │   │   ├── datasources/
+│   │   │   │   └── random_image_remote_data_source.dart
+│   │   │   ├── models/
+│   │   │   │   └── random_image_model.dart
+│   │   │   └── repositories/
+│   │   │       └── random_image_repository_impl.dart
+│   │   ├── domain/
+│   │   │   ├── entities/
+│   │   │   │   └── random_image_entity.dart
+│   │   │   ├── repositories/
+│   │   │   │   └── random_image_repository.dart
+│   │   │   └── usecases/
+│   │   │       └── get_random_image_usecase.dart
+│   │   └── presentation/
+│   │       ├── bloc/
+│   │       │   ├── random_image_bloc.dart
+│   │       │   ├── random_image_event.dart
+│   │       │   └── random_image_state.dart
+│   │       └── widgets/
+│   │           └── random_image_view.dart (+ supporting widgets/clipper)
+│   ├── bookmark/
+│   │   ├── data/
+│   │   │   └── datasources/local/ (sqflite) + repositories
+│   │   ├── domain/
+│   │   │   └── entities/usecases/repositories (Add/Remove/Get bookmarks)
+│   │   └── presentation/
+│   │       ├── cubit/
+│   │       │   └── bookmark_album_cubit.dart
+│   │       └── screens/
+│   │           └── bookmark_album_page.dart (+ detail page)
+│   └── splash/
+│       ├── presentation/
+│       │   ├── bloc/       └── splash_bloc.dart
+│       │   └── screens/    └── splash_page.dart
+└── integration_test/
+    └── random_image_flow_test.dart
+    
 - **Bookmarks on device** – `sqflite` stores bookmarked images locally. Users can toggle the bookmark chip in the hero view and revisit their saved collection even offline.
 - **Custom visuals** – hero image and app bar share complementary “wave” clippers, plus a glowing status halo and arc text for the image name.
 - **Animations everywhere** – `AnimatedSwitcher` for the hero content, button loading indicator, and a bouncing splash logo backed by `TweenSequence`.

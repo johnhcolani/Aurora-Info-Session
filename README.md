@@ -48,6 +48,8 @@ A Flutter showcase app that fetches a random image, builds an adaptive palette a
   - foreground contrast for labels, indicators, and the refresh button
   - the button background/outline so it remains legible on both light and dark palettes
 - **Clean architecture + BLoC** – data, domain, and presentation layers stay isolated, allowing deterministic BLoC tests and dehydration/rehydration of state.
+
+```
 lib/
 ├── core/
 │   ├── constants/
@@ -97,7 +99,7 @@ lib/
 │       │   └── screens/    └── splash_page.dart
 └── integration_test/
     └── random_image_flow_test.dart
-    
+  ```  
 - **Bookmarks on device** – `sqflite` stores bookmarked images locally. Users can toggle the bookmark chip in the hero view and revisit their saved collection even offline.
 - **Custom visuals** – hero image and app bar share complementary “wave” clippers, plus a glowing status halo and arc text for the image name.
 - **Animations everywhere** – `AnimatedSwitcher` for the hero content, button loading indicator, and a bouncing splash logo backed by `TweenSequence`.

@@ -155,7 +155,11 @@ flutter run -d <device-id>
 
 An end-to-end capture of the integration run lives in `docs/videos/integration_demo.mp4`. Embed it wherever you publish release notes or drop it into presentations to show the adaptive theming in motion.
 
-[Integration test walkthrough ▶️](https://github.com/user-attachments/assets/44e788eb-6ac3-4fef-8972-043c55f4da2f)
+<p align="center">
+  <a href="https://github.com/user-attachments/assets/44e788eb-6ac3-4fef-8972-043c55f4da2f" target="_blank" rel="noopener noreferrer">
+    🎬 Watch the integration test walkthrough
+  </a>
+</p>
 
 ## Navigation & routing
 

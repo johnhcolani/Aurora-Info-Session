@@ -1,6 +1,6 @@
 # Aurora Gallery
-[Integration test walkthrough ▶️](https://github.com/user-attachments/assets/c6dd6428-5201-4716-8ed1-66fcd25d323b)
 
+[Hero animation ▶️](https://github.com/user-attachments/assets/c6dd6428-5201-4716-8ed1-66fcd25d323b)
 
 A Flutter showcase app that fetches a random image, builds an adaptive palette around it, and lets users bookmark their favourites for offline viewing.
 

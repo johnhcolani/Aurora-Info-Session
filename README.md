@@ -51,9 +51,9 @@ A Flutter showcase app that fetches a random image, builds an adaptive palette a
 - **Accessible semantics** – refresh button, bookmark toggle, and empty-bookmark icon expose descriptive semantics across both light and dark themes so TalkBack/VoiceOver users get informative labels.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/1cca1e17-924b-4922-a83c-28812e8c7f7c" width="240" alt="Dark mode button semantics" />
-  <img src="https://github.com/user-attachments/assets/12f31cd8-bf80-4577-b2f1-7744a447bda1" width="240" alt="Light mode button semantics" />
-  <img src="https://github.com/user-attachments/assets/7e8902e3-cb21-4d65-9f54-7538066420b3" width="240" alt="Bookmarks screen semantics" />
+  <img src="https://github.com/user-attachments/assets/1cca1e17-924b-4922-a83c-28812e8c7f7c" width="200" alt="Dark mode button semantics" />
+  <img src="https://github.com/user-attachments/assets/12f31cd8-bf80-4577-b2f1-7744a447bda1" width="200" alt="Light mode button semantics" />
+  <img src="https://github.com/user-attachments/assets/7e8902e3-cb21-4d65-9f54-7538066420b3" width="200" alt="Bookmarks screen semantics" />
 </p>
 
 ## Architecture
@@ -130,5 +130,4 @@ Navigation calls remain terse (`context.router.push(const BookmarkAlbumRoute())`
 ## Credits
 
 - UI concept & screenshots by the Aurora product team.
-- Dominant colour extraction powered by the Flutter `palette_generator` package.
-- App icon & splash logo sourced from the project assets folder.
+- Dominant colour extraction powered by the Flutter `palette_generator`

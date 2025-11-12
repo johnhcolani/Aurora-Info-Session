@@ -1,7 +1,8 @@
 # Aurora Gallery
 
-![808BAD7D-714F-414F-A210-58626369E34C_1_102_o](https://github.com/user-attachments/assets/c6dd6428-5201-4716-8ed1-66fcd25d323b)
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c6dd6428-5201-4716-8ed1-66fcd25d323b" width="320" alt="Aurora Gallery hero logo" />
+</p>
 
 A Flutter showcase app that fetches a random image, builds an adaptive palette around it, and lets users bookmark their favourites for offline viewing.
 

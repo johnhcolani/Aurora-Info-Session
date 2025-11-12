@@ -1,10 +1,12 @@
 # Aurora Gallery
 
-
-
-
-https://github.com/user-attachments/assets/3ae83f7a-2a48-4994-9417-08e98f0e23bb
-
+<p align="center">
+  <a href="https://github.com/user-attachments/assets/c6dd6428-5201-4716-8ed1-66fcd25d323b" target="_blank" rel="noopener noreferrer">
+    <img src="https://github.com/user-attachments/assets/c6dd6428-5201-4716-8ed1-66fcd25d323b" width="320" alt="Aurora Gallery hero logo" />
+  </a>
+  <br />
+  <sub>Tap to open the full hero artwork</sub>
+</p>
 
 A Flutter showcase app that fetches a random image, builds an adaptive palette around it, and lets users bookmark their favourites for offline viewing.
 
@@ -155,11 +157,7 @@ flutter run -d <device-id>
 
 An end-to-end capture of the integration run lives in `docs/videos/integration_demo.mp4`. Embed it wherever you publish release notes or drop it into presentations to show the adaptive theming in motion.
 
-<p align="center">
-  <a href="https://github.com/user-attachments/assets/44e788eb-6ac3-4fef-8972-043c55f4da2f" target="_blank" rel="noopener noreferrer">
-    🎬 Watch the integration test walkthrough
-  </a>
-</p>
+[Integration test walkthrough ▶️](https://github.com/user-attachments/assets/44e788eb-6ac3-4fef-8972-043c55f4da2f)
 
 ## Navigation & routing
 

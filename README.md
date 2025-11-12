@@ -45,6 +45,7 @@ A Flutter showcase app that fetches a random image, builds an adaptive palette a
 - **Bookmarks on device** – `sqflite` stores bookmarked images locally. Users can toggle the bookmark chip in the hero view and revisit their saved collection even offline.
 - **Custom visuals** – hero image and app bar share complementary “wave” clippers, plus a glowing status halo and arc text for the image name.
 - **Animations everywhere** – `AnimatedSwitcher` for the hero content, button loading indicator, and a bouncing splash logo backed by `TweenSequence`.
+- **Accessible semantics** – refresh button, bookmark toggle, and empty-bookmark icon expose descriptive semantics across both light and dark themes so TalkBack/VoiceOver users get informative labels.
 
 ## Architecture
 

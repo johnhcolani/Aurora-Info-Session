@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -88,8 +87,8 @@ class RandomImageView extends StatelessWidget {
                                 onPressed: state.isLoading
                                     ? null
                                     : () => context.read<RandomImageBloc>().add(
-                                          const RandomImageEvent.refreshRequested(),
-                                        ),
+                                        const RandomImageEvent.refreshRequested(),
+                                      ),
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 16,
@@ -116,16 +115,16 @@ class RandomImageView extends StatelessWidget {
                                           strokeWidth: 1.6,
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                            buttonForegroundColor,
-                                          ),
+                                                buttonForegroundColor,
+                                              ),
                                         ),
                                       )
                                     : Text(
                                         'Another',
                                         style: theme.textTheme.titleMedium
                                             ?.copyWith(
-                                          color: buttonForegroundColor,
-                                        ),
+                                              color: buttonForegroundColor,
+                                            ),
                                       ),
                               ),
                             ),
@@ -182,8 +181,11 @@ class RandomImageView extends StatelessWidget {
 
     final imageName =
         Uri.tryParse(imageUrl)?.pathSegments.lastOrNull ?? 'Random image';
-    final ellipseData =
-        _ellipseData(imageName, backgroundColor, foregroundColor);
+    final ellipseData = _ellipseData(
+      imageName,
+      backgroundColor,
+      foregroundColor,
+    );
 
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
@@ -353,11 +355,7 @@ class EllipseData {
 }
 
 class _GlowingEllipse extends StatelessWidget {
-  const _GlowingEllipse({
-    required this.data,
-    this.size = const Size(200, 140),
-    super.key,
-  });
+  const _GlowingEllipse({required this.data, this.size = const Size(200, 140)});
 
   final EllipseData data;
   final Size size;
@@ -395,19 +393,19 @@ class SingleGlowEllipsePainter extends CustomPainter {
 
     final rect = Rect.fromCenter(center: Offset.zero, width: 120, height: 80);
 
-    const glowLayers = 8;
+    const glowLayers = 6;
     for (var i = glowLayers; i > 0; i--) {
       final glowPaint = Paint()
-        ..color = data.color.withOpacity(0.5 / i)
-        ..strokeWidth = 2 + (i * 3)
+        ..color = data.color.withValues(alpha: 0.35 / i)
+        ..strokeWidth = 0.8 + (i * 1.6)
         ..style = PaintingStyle.stroke
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, i * 3.0);
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, i * 2.2);
       canvas.drawOval(rect, glowPaint);
     }
 
     final basePaint = Paint()
       ..color = data.color
-      ..strokeWidth = 2
+      ..strokeWidth = 1
       ..style = PaintingStyle.stroke;
     canvas.drawOval(rect, basePaint);
 
